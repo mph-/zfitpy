@@ -1,0 +1,8 @@
+figure.figsize: 7, 3
+font.size: 11
+lines.linewidth: 1.5
+legend.fontsize: 10
+lines.markersize: 5
+axes.titlesize: 11
+figure.titlesize: 11
+
