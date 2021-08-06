@@ -1,7 +1,7 @@
 import numpy as np
 from numpy import exp
 from matplotlib.pyplot import subplots, style, savefig, show, plot
-from model import Model
+from .model import Model
 import numpy as np
 
 class Parallel2SeriesRLModel(Model):

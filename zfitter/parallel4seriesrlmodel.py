@@ -1,4 +1,4 @@
-from model import Model
+from .model import Model
 import numpy as np
 
 class Parallel4SeriesRLModel(Model):

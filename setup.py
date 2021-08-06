@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-setup(name='mexam',
+setup(name='zfitter',
       version='0.1.0',
       author='Michael Hayes',
       author_email='michael.hayes@canterbury.ac.nz',

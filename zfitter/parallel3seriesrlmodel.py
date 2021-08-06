@@ -1,4 +1,4 @@
-from model import Model
+from .model import Model
 import numpy as np
 
 class Parallel3SeriesRLModel(Model):
@@ -14,7 +14,7 @@ class Parallel3SeriesRLModel(Model):
         self.params = (R1, L1, R2, L2, R3, L3)        
 
     def __str__(self):
-        return 'R1=%.2e ohms, L1=%.2e H, R2=%.2e ohms, L2=%.2e H, R3=%.2e ohms, L3=%.2e H' % self.params)
+        return 'R1=%.2e ohms, L1=%.2e H, R2=%.2e ohms, L2=%.2e H, R3=%.2e ohms, L3=%.2e H' % self.params
         
     def Z(self, f):
 

@@ -18,4 +18,13 @@ class KeysightE4990AImpedanceData(ImpedanceData):
         self.Z = foo[:, 1] + 1j * foo[:, 2]
         self.filename = basename(filename)
         self.name, ext = splitext(basename(filename.lower()))
+
         
+def impedancedata(filename):
+
+    lines = open(filename).readlines()
+    if lines[0].startswith('!Agilent Technologies,E4990A'):
+        return KeysightE4990AImpedanceData(filename)
+    raise ValueError('Cannot determine impedance format for %s' % filename)
+
+
