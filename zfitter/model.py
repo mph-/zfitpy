@@ -4,6 +4,12 @@ import numpy as np
 class Model(object):
 
     Zcode = None
+
+    def __init__(self, *args):
+        """Create model instance."""
+        
+        for m, p in enumerate(self.paramnames):
+            setattr(self, p, args[m])
     
     def __repr__(self):
         return self.__str__()
