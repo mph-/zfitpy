@@ -1,9 +1,9 @@
-from .model import Model, build
+from .model import Model
 from lcapy import R, L
 
 class Parallel4SeriesRLModel(Model):
 
-    net, Zcode = build((R('R1') + L('L1')) | (R('R2') + L('L2')) | (R('R3') + L('L3'))  | (R('R4') + L('L4')))
+    net = (R('R1') + L('L1')) | (R('R2') + L('L2')) | (R('R3') + L('L3')) | (R('R4') + L('L4'))
     
     def __init__(self, R1, L1, R2, L2, R3, L3, R4, L4):
 

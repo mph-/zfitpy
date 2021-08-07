@@ -2,5 +2,9 @@ from .zfitter import *
 from .plotter import *
 from .impedancedata import *
 
-# Don't include the models here since some will take a while
-# to compile.
+from .seriesrlmodel import *
+from .seriesrlcmodel import *
+from .parallel2seriesrlmodel import *
+from .parallel3seriesrlmodel import *
+from .parallel4seriesrlmodel import *
+

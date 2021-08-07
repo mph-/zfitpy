@@ -1,9 +1,9 @@
-from .model import Model, build
+from .model import Model
 from lcapy import R, L
 
 class SeriesRLModel(Model):
 
-    net, Zcode = build(R('Rs') + L('Ls'))
+    net = R('Rs') + L('Ls')
 
     def __init__(self, Rs, Ls):
 
