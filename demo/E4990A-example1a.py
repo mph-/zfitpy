@@ -4,7 +4,7 @@ from matplotlib.pyplot import subplots, style, savefig, show
 from zfitter import ZFitter
 from zfitter import Plotter
 from zfitter import impedancedata
-from zfitter import Parallel2SeriesRLModel
+from zfitter.parallel2seriesrlmodel import Parallel2SeriesRLModel
 
 style.use('z.mplstyle')
 
