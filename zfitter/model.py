@@ -1,6 +1,17 @@
 from lcapy import f
 import numpy as np
 
+def modelmake(name, net, paramnames):
+
+    params = ', '.join(paramnames)
+    
+    docstring = name + '(' + params + '): ' + str(net)
+    newclass = type(name, (Model, ), {'__doc__': docstring})
+    newclass.net = net
+    newclass.paramnames = paramnames
+    return newclass
+
+
 class Model(object):
 
     Zcode = None
