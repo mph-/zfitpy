@@ -21,6 +21,28 @@ class Plotter(object):
         axes.set_title(title)
         axes.legend()
 
+    def Z_fit(self, data, model, axes=None, title=None):
+
+        Z = model.Z(data.f)
+        
+        if axes is None:
+            fig, axes = subplots(1)
+
+        axes.plot(data.f, data.Z.real, label=data.name + ' data real')
+        axes.plot(data.f, data.Z.imag, '--', label=data.name + ' data imag')
+
+        axes.plot(data.f, Z.real, label=data.name + ' fit real')
+        axes.plot(data.f, Z.imag, '--', label=data.name + ' fit imag')        
+
+        axes.set_xlabel('Frequency (Hz)')
+        axes.set_ylabel('Impedance (ohms)')
+        axes.grid(True)
+
+        if title is None:
+            title = str(model)
+        axes.set_title(title)
+        axes.legend()        
+
     def Z(self, data, axes=None, title=None):
         
         if axes is None:
