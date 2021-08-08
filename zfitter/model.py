@@ -129,9 +129,9 @@ class Model(object):
 
         parts = []
         for var, val in vars(self).items():
-            units = {'R': 'ohms', 'C': 'F', 'L': 'H', 'K':'', 'a':''}[var[0]]
+            units = {'R': ' ohms', 'C': ' F', 'L': ' H', 'K':'', 'a':''}[var[0]]
 
             # Could convert units to have SI prefixes
-            parts.append('%s=%.2e %s' % (var, val, units))
+            parts.append('%s=%.2e%s' % (var, val, units))
 
         return ', '.join(parts)

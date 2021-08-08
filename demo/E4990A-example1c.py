@@ -1,5 +1,4 @@
-import numpy as np
-from matplotlib.pyplot import subplots, style, savefig, show
+from matplotlib.pyplot import style, savefig
 
 from zfitter import ZFitter
 from zfitter import Plotter

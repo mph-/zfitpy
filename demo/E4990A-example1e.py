@@ -16,6 +16,6 @@ zfitter = ZFitter(ParallelRCPEModel, data.f, data.Z)
 fitmodel = zfitter(ranges=ranges)
 
 plotter = Plotter()
-plotter.Z_error(data, fitmodel)
+plotter.Z_fit(data, fitmodel)
 
 savefig(__file__.replace('.py', '.pgf'), bbox_inches='tight')
