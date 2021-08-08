@@ -15,7 +15,8 @@ setup(name='zfitter',
       download_url='https://eng-git.canterbury.ac.nz/mph/zfitter',
       install_requires=['matplotlib',
                         'numpy',
-                        'scipy',                        
+                        'scipy',
+                        'lcapy'                        
       ],
       packages=find_packages(),
       classifiers=[
