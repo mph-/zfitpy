@@ -13,6 +13,10 @@ class KeysightE4990AImpedanceData(ImpedanceData):
 
     def __init__(self, filename):
 
+        lines = open(filename).readlines()
+        if not lines[0].startswith('!Agilent Technologies,E4990A'):
+            raise ValueError('Not Keysight E4990A')
+        
         foo = np.loadtxt(filename, skiprows=5, delimiter=',', comments='END')
         self.f = foo[:, 0]
         self.Z = foo[:, 1] + 1j * foo[:, 2]
@@ -22,9 +26,13 @@ class KeysightE4990AImpedanceData(ImpedanceData):
         
 def impedancedata(filename):
 
-    lines = open(filename).readlines()
-    if lines[0].startswith('!Agilent Technologies,E4990A'):
+    try:
         return KeysightE4990AImpedanceData(filename)
+    except:
+        pass
+
+    # Add support for other data formats.
+    
     raise ValueError('Cannot determine impedance format for %s' % filename)
 
 

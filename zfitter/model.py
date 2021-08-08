@@ -21,6 +21,9 @@ class Model(object):
 
     def __init__(self, *args):
         """Create model instance."""
+
+        if len(args) == 0:
+            return
         
         for m, p in enumerate(self.paramnames):
             setattr(self, p, args[m])
@@ -90,9 +93,9 @@ class Model(object):
         raise ValueError('Method yimpulse not defined for %s' % self.__class__.__name__)    
 
 
-    def draw(self):
+    def draw(self, filename=None):
 
-        self.net.draw()
+        self.net.draw(filename)
 
     def _Zbuild(self):
     
