@@ -159,7 +159,7 @@ doctest:
 %.pdf: %.tex
 	latexmk -f -g -pdf $*
 
-figs: ../demo/E4990A-example1a.png ../demo/E4990A-example1b.png ../demo/E4990A-example1c.png ../demo/E4990A-example1d.png ../demo/E4990A-example1e.png ../demo/E4990A-example1f.png Parallel2SeriesRLModel.png ParallelRCPEModel.png
+figs: ../demo/E4990A-example1a.png ../demo/E4990A-example1b.png ../demo/E4990A-example1c.png ../demo/E4990A-example1d.png ../demo/E4990A-example1e.png ../demo/E4990A-example1f.png Parallel2SeriesRLModel.png ParallelRCPEModel.png SeriesRParallelRCPEModel.png
 
 %.png: %.py
 	cd $(dir $@); python3 $(notdir $^)
@@ -169,3 +169,6 @@ Parallel2SeriesRLModel.png:
 
 ParallelRCPEModel.png:
 	zmodel-draw ParallelRCPEModel $@
+
+SeriesRParallelRCPEModel.png:
+	zmodel-draw SeriesRParallelRCPEModel $@

@@ -19,4 +19,4 @@ fitmodel = zfitter(ranges=rangesRL2)
 plotter = Plotter()
 plotter.Z_error(data, fitmodel)
 
-savefig(__file__.replace('.py', '.pgf'), bbox_inches='tight')
+savefig(__file__.replace('.py', '.png'), bbox_inches='tight')

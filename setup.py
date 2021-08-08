@@ -19,6 +19,11 @@ setup(name='zfitter',
                         'lcapy'                        
       ],
       packages=find_packages(),
+      entry_points={
+          'console_scripts': [
+              'zmodel-draw=zfitter.scripts.zmodel_draw:main',
+          ],
+      },                    
       classifiers=[
           "Programming Language :: Python :: 3",
           "License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)",

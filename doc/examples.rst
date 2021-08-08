@@ -14,4 +14,11 @@ Examples
 .. image:: ../demo/E4990A-example1d.png
    :width: 15cm           
            
+
+.. image:: SeriesRParallelRCPEModel.png
+   :width: 7cm
+
+.. image:: ../demo/E4990A-example1h.png
+   :width: 15cm           
            
+      
