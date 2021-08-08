@@ -1,6 +1,8 @@
 from lcapy import f
 import numpy as np
 
+models = {}
+
 def modelmake(name, net, paramnames):
 
     params = ', '.join(paramnames)
@@ -9,6 +11,7 @@ def modelmake(name, net, paramnames):
     newclass = type(name, (Model, ), {'__doc__': docstring})
     newclass.net = net
     newclass.paramnames = paramnames
+    models[name] = newclass
     return newclass
 
 
@@ -126,7 +129,7 @@ class Model(object):
 
         parts = []
         for var, val in vars(self).items():
-            units = {'R': 'ohms', 'C': 'F', 'L': 'H'}[var[0]]
+            units = {'R': 'ohms', 'C': 'F', 'L': 'H', 'K':'', 'a':''}[var[0]]
 
             # Could convert units to have SI prefixes
             parts.append('%s=%.2e %s' % (var, val, units))
