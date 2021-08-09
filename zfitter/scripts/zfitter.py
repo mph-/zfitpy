@@ -74,7 +74,7 @@ def main():
         model = Model()
         model.draw(args.output_filename)
 
-        if args.show:
+        if args.show or args.output_filename is None:
             show()        
         return 0
 
@@ -102,7 +102,7 @@ def main():
     if args.output_filename is not None:
         savefig(args.output_filename, bbox_inches='tight')
 
-    if args.show:
+    if args.show or args.output_filename is None:        
         show()
     
     return 0
