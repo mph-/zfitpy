@@ -13,26 +13,7 @@ from zfitter import ZFitter
 from zfitter import Plotter
 from zfitter import impedancedata
 
-def main():
-
-    parser = ArgumentParser(description='Draw schematic of impedance model.')
-    parser.add_argument('--version', action='version', version=__doc__.split('\n')[0])
-    parser.add_argument('--modelname', type=str, help='model name')
-    parser.add_argument('--net', type=str,
-                        help="specify network, e.g., R('R1') + L('L1')")
-    parser.add_argument('--input_filename', type=str, help='input filename')    
-    parser.add_argument('--output_filename', type=str, help='output filename')
-    parser.add_argument('--ranges', type=str, help="specify search ranges, e.g.,  {'R1':(0,1),'L1':(10,20)}")
-    parser.add_argument('--draw', action='store_true', default=False, help='draw network')
-    parser.add_argument('--show', action='store_true', default=False, help='show plot')
-    parser.add_argument('--plot-nyquist', action='store_true', default=False, help='show Nyquist plot')    
-    parser.add_argument('--plot-error', action='store_true', default=False, help='plot impedance error')
-    parser.add_argument('--plot-fit', action='store_true', default=False, help='plot impedance and fit')        
-    parser.add_argument('--title', type=str, help='title for plot')
-    parser.add_argument('--steps', type=int, default=20,
-                        help='the number of search steps per range')
-
-    args = parser.parse_args()
+def model_make(args):
 
     if not args.net and not args.modelname:
         raise ValueError('Either need to specify model name with --modelname or network with --net')
@@ -47,7 +28,33 @@ def main():
             modelnames = ', '.join(list(models.keys()))
             raise ValueError('Unknown model %s: known models: %s' % (args.modelname, modelnames))            
 
+    return Model
+
+def main():
+
+    parser = ArgumentParser(description='Draw schematic of impedance model.')
+    parser.add_argument('--version', action='version', version=__doc__.split('\n')[0])
+    parser.add_argument('--modelname', type=str, help='model name')
+    parser.add_argument('--net', type=str,
+                        help="specify network, e.g., R('R1') + L('L1')")
+    parser.add_argument('--input_filename', type=str, help='input filename')    
+    parser.add_argument('--output_filename', type=str, help='output filename')
+    parser.add_argument('--ranges', type=str, help="specify search ranges, e.g.,  {'R1':(0,1),'L1':(10,20)}")
+    parser.add_argument('--draw', action='store_true', default=False, help='draw network')
+    parser.add_argument('--show', action='store_true', default=False, help='show plot')
+    parser.add_argument('--nyquist', action='store_true', default=False, help='use Nyquist plot')    
+    parser.add_argument('--plot-error', action='store_true', default=False, help='plot impedance error')
+    parser.add_argument('--plot-fit', action='store_true', default=False, help='plot impedance data and fit')
+    parser.add_argument('--plot-data', action='store_true', default=False, help='plot impedance data')    
+    parser.add_argument('--magphase', action='store_true', default=False, help='plot magnitude and phase of impedance')            
+    parser.add_argument('--title', type=str, help='title for plot')
+    parser.add_argument('--steps', type=int, default=20,
+                        help='the number of search steps per range')
+
+    args = parser.parse_args()
+
     if args.draw:
+        Model = model_make(args)
         model = Model()
         model.draw(args.output_filename)
 
@@ -60,24 +67,33 @@ def main():
     
     data = impedancedata(args.input_filename)
 
-    if args.ranges is None:
+    if False and args.ranges is None:
         raise ValueError('Search ranges not specified')
 
-    zfitter = ZFitter(Model, data.f, data.Z)    
+    if args.ranges is None:
+        fitmodel = None
+    else:
 
-    fitmodel = zfitter(ranges=args.ranges, Ns=args.steps)
-
-    print('%s, error=%.3e' % (fitmodel, zfitter.error))
+        Model = model_make(args)
+        zfitter = ZFitter(Model, data.f, data.Z)            
+        fitmodel = zfitter(ranges=args.ranges, Ns=args.steps)
+        print('%s, error=%.3e' % (fitmodel, zfitter.error))
     
     plotter = Plotter()
-    if args.plot_error:
+    if args.plot_error and fitmodel:
         plotter.Z_error(data, fitmodel, title=args.title)
 
     if args.plot_fit:
-        plotter.Z_fit(data, fitmodel, title=args.title)
+        if args.nyquist:
+            plotter.Z_nyquist(data, fitmodel, title=args.title)
+        else:
+            plotter.Z_fit(data, fitmodel, title=args.title, magphase=args.magphase)
 
-    if args.plot_nyquist:
-        plotter.Z_nyquist(data, fitmodel, title=args.title)                
+    if args.plot_data:
+        if args.nyquist:
+            plotter.Z_nyquist(data, None, title=args.title)
+        else:
+            plotter.Z(data, fitmodel, title=args.title)                        
 
     if args.output_filename is not None:
         savefig(args.output_filename, bbox_inches='tight')
