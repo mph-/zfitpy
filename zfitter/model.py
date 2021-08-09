@@ -1,4 +1,4 @@
-from lcapy import f, R, C, L, CPE
+from lcapy import f, G, R, C, L, CPE, Par, Ser
 import numpy as np
 
 models = {}

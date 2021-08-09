@@ -34,8 +34,8 @@ class Plotter(object):
 
             axes.plot(data.f, abs(data.Z), label=data.name + ' data mag')
             ax2.plot(data.f, degrees(angle(data.Z)), '--', label=data.name + ' data phase')
-            axes.plot(data.f, abs(Z), label=data.name + ' fit mag')
-            ax2.plot(data.f, degrees(angle(Z)), '--', label=data.name + ' fit phase')                     
+            axes.plot(data.f, abs(Z), label=data.name + ' model mag')
+            ax2.plot(data.f, degrees(angle(Z)), '--', label=data.name + ' model phase')                     
             ax2.legend()
             ax2.set_ylabel('Impedance phase (degrees)')            
             
@@ -43,8 +43,8 @@ class Plotter(object):
             axes.plot(data.f, data.Z.real, label=data.name + ' data real')
             axes.plot(data.f, data.Z.imag, '--', label=data.name + ' data imag')
 
-            axes.plot(data.f, Z.real, label=data.name + ' fit real')
-            axes.plot(data.f, Z.imag, '--', label=data.name + ' fit imag')
+            axes.plot(data.f, Z.real, label=data.name + ' model real')
+            axes.plot(data.f, Z.imag, '--', label=data.name + ' model imag')
 
         axes.set_xlabel('Frequency (Hz)')
         axes.set_ylabel('Impedance (ohms)')
