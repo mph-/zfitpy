@@ -28,7 +28,10 @@ This example uses a network comprised of a parallel combination of RL series net
 ``` bash
    $ zfitter --net "L('L1') + (R('R1') | (L('L2') + R('R2')))" --draw
 ```
-   
+
+![](doc/RL2.png)
+
+
 The network in this example has four parameters: `R1`, `L1`, `R2`, and
 `L2`.  A brute force search is performed for each component using the
 specified ranges; this is refined with a finishing search.  The ranges
