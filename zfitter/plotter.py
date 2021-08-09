@@ -53,7 +53,26 @@ class Plotter(object):
         if title is None:
             title = str(model)
         axes.set_title(title)
-        axes.legend()        
+        axes.legend()
+
+    def Z_nyquist(self, data, model, axes=None, title=None):
+
+        Z = model.Z(data.f)
+        
+        if axes is None:
+            fig, axes = subplots(1)
+
+        axes.plot(data.Z.real, data.Z.imag, label=data.name + ' data')
+        axes.plot(Z.real, Z.imag, label=data.name + ' model')        
+
+        axes.set_xlabel('Impedance real (ohms)')
+        axes.set_ylabel('Impedance imag (ohms)')        
+        axes.grid(True)
+
+        if title is None:
+            title = str(model)
+        axes.set_title(title)
+        axes.legend()                
 
     def Z(self, data, axes=None, title=None):
         

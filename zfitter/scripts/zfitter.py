@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""zfitter V0.1
+"""zfitter V0.2
 Copyright (c) 2021 Michael P. Hayes, UC ECE, NZ
 
 Usage: zfitter modelname input-filename output-filename
@@ -13,31 +13,6 @@ from zfitter import ZFitter
 from zfitter import Plotter
 from zfitter import impedancedata
 
-def split(s, delimiter):
-    """Split string by specified delimiter but not if delimiter is within
-    parentheses."""
-
-    parts = []
-    current = []
-    close_bracket = ''
-    bracket_stack = []
-    for c in (s + delimiter):
-        if c == delimiter and len(bracket_stack) == 0:
-            if len(current) > 0:
-                parts.append(''.join(current))
-            current = []
-        else:
-            if c == close_bracket:
-                close_bracket = bracket_stack.pop()                
-            elif c == '(':
-                bracket_stack.append(close_bracket)
-                close_bracket = ')'
-            current.append(c)
-    if close_bracket != '':
-        raise ValueError('Missing %s in %s' % (close_bracket, s))
-    return parts
-
-
 def main():
 
     parser = ArgumentParser(description='Draw schematic of impedance model.')
@@ -50,6 +25,7 @@ def main():
     parser.add_argument('--ranges', type=str, help="specify search ranges, e.g.,  {'R1':(0,1),'L1':(10,20)}")
     parser.add_argument('--draw', action='store_true', default=False, help='draw network')
     parser.add_argument('--show', action='store_true', default=False, help='show plot')
+    parser.add_argument('--plot-nyquist', action='store_true', default=False, help='show Nyquist plot')    
     parser.add_argument('--plot-error', action='store_true', default=False, help='plot impedance error')
     parser.add_argument('--plot-fit', action='store_true', default=False, help='plot impedance and fit')        
     parser.add_argument('--title', type=str, help='title for plot')
@@ -98,7 +74,10 @@ def main():
         plotter.Z_error(data, fitmodel, title=args.title)
 
     if args.plot_fit:
-        plotter.Z_fit(data, fitmodel, title=args.title)        
+        plotter.Z_fit(data, fitmodel, title=args.title)
+
+    if args.plot_nyquist:
+        plotter.Z_nyquist(data, fitmodel, title=args.title)                
 
     if args.output_filename is not None:
         savefig(args.output_filename, bbox_inches='tight')
