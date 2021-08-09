@@ -6,7 +6,7 @@ Usage: zfitter modelname input-filename output-filename
 """
 
 from __future__ import print_function
-from matplotlib.pyplot import show, savefig
+from matplotlib.pyplot import show, savefig, style
 from argparse import ArgumentParser
 from zfitter.model import models, modelmake
 from zfitter import ZFitter
@@ -50,9 +50,13 @@ def main():
     parser.add_argument('--title', type=str, help='title for plot')
     parser.add_argument('--steps', type=int, default=20,
                         help='the number of search steps per range')
+    parser.add_argument('--style', type=str, help='matplotlib style filename')
 
     args = parser.parse_args()
 
+    if args.style:
+        style.use(args.style)
+    
     if args.draw:
         Model = model_make(args)
         model = Model()

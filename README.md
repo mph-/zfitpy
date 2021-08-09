@@ -87,7 +87,7 @@ The data can be plotted without fitting if the `ranges` argument is not specifie
 
 ![](doc/data.png)
 
-A Nyquist plot is generated if the `--nyquist` option is specified.   Magnitude and phase is plotted is the `--magphase` option is specified.
+A Nyquist plot is generated if the `--nyquist` option is specified.   Magnitude and phase is plotted is the `--magphase` option is specified.  The plot style can be altered using the `--style` option to specify a Matplotlib style file.
 
 Other command line options for zfitter can be found with the --help argument.
 
