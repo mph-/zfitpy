@@ -3,18 +3,17 @@ from matplotlib.pyplot import style, savefig
 from zfitter import ZFitter
 from zfitter import Plotter
 from zfitter import impedancedata
-from zfitter import Parallel2SeriesRLModel
+from zfitter import SeriesRParallelRLModel
 
 style.use('z.mplstyle')
 
 data = impedancedata('E4990A-example1.csv')
 
-ranges = {'R1': (60e-3, 90e-3), 'L1': (8e-3, 12e-3),
-          'R2': (15, 80), 'L2': (10e-3, 30e-3)}
+rangesRL2 = ((0, 0.4), (1e3, 5e3), (8e-3, 12e-3))
 
-zfitter = ZFitter(Parallel2SeriesRLModel, data.f, data.Z)
+zfitter = ZFitter(SeriesRParallelRLModel, data.f, data.Z)
 
-fitmodel = zfitter(ranges=ranges)
+fitmodel = zfitter(ranges=rangesRL2)
 
 plotter = Plotter()
 plotter.Z_error(data, fitmodel)

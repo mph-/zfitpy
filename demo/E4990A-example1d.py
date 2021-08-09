@@ -9,7 +9,7 @@ style.use('z.mplstyle')
 
 data = impedancedata('E4990A-example1.csv')
 
-ranges = ((0, 10e3), (1e-3, 1e3), (-1, 1))
+ranges = {'R1': (0, 10e3), 'K': (1e-3, 1e3), 'alpha': (-1, 1)}
 
 zfitter = ZFitter(ParallelRCPEModel, data.f, data.Z)
 

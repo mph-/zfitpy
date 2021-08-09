@@ -53,7 +53,8 @@ def main():
     parser.add_argument('--plot-error', action='store_true', default=False, help='plot impedance error')
     parser.add_argument('--plot-fit', action='store_true', default=False, help='plot impedance and fit')        
     parser.add_argument('--title', type=str, help='title for plot')
-    
+    parser.add_argument('--steps', type=int, default=20,
+                        help='the number of search steps per range')
 
     args = parser.parse_args()
 
@@ -88,7 +89,7 @@ def main():
 
     zfitter = ZFitter(Model, data.f, data.Z)    
 
-    fitmodel = zfitter(ranges=args.ranges)
+    fitmodel = zfitter(ranges=args.ranges, Ns=args.steps)
 
     print('%s, error=%.3e' % (fitmodel, zfitter.error))
     

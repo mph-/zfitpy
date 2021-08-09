@@ -10,10 +10,10 @@ style.use('z.mplstyle')
 
 data = impedancedata('E4990A-example1.csv')
 
-ranges = ((1e-3, 1e3), (-1, 0), (0, 0.1), (100, 1e4))
+ranges = {'R1': (0, 10e3), 'K': (1e-3, 1e3), 'alpha': (-1, 1), 'R2': (100, 1e4)}
 
 # Create model
-Model = modelmake('Model', (CPE('K1', 'alpha1') + R('R1')) | R('R2'), ('K1', 'alpha1', 'R1', 'R2'))
+Model = modelmake('Model', (CPE('K', 'alpha') + R('R1')) | R('R2'), ('K', 'alpha', 'R1', 'R2'))
 
 zfitter = ZFitter(Model, data.f, data.Z)
 
