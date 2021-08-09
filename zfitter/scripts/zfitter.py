@@ -38,24 +38,31 @@ def split(s, delimiter):
     return parts
 
 
-
 def main():
 
     parser = ArgumentParser(description='Draw schematic of impedance model.')
-    parser.add_argument('modelname', type=str, help='model name')
     parser.add_argument('--version', action='version', version=__doc__.split('\n')[0])
+    parser.add_argument('--modelname', type=str, help='model name')
+    parser.add_argument('--net', type=str, help='treat model as network')
     parser.add_argument('--input_filename', type=str, help='input filename')    
     parser.add_argument('--output_filename', type=str, help='output filename')
     parser.add_argument('--ranges', type=str, help='search ranges')
     parser.add_argument('--draw', action='store_true', default=False, help='draw network')
     parser.add_argument('--show', action='store_true', default=False, help='show plot')
-    parser.add_argument('--net', action='store_true', default=False, help='treat model as network')        
+    parser.add_argument('--plot-error', action='store_true', default=False, help='plot impedance error')
+    parser.add_argument('--plot-fit', action='store_true', default=False, help='plot impedance and fit')        
+    parser.add_argument('--title', type=str, help='title for plot')
+    
 
     args = parser.parse_args()
 
+    if not args.net and not args.modelname:
+        raise ValueError('Either need to specify model name with --modelname to network with --net')
+
     if args.net:
-        Model = modelmake('Model', args.modelname)
-    else:
+        Model = modelmake('Model', args.net)
+
+    if args.modelname:        
         try:
             Model = models[args.modelname]
         except:
@@ -85,7 +92,11 @@ def main():
     print('%s, error=%.3e' % (fitmodel, zfitter.error))
     
     plotter = Plotter()
-    plotter.Z_error(data, fitmodel)
+    if args.plot_error:
+        plotter.Z_error(data, fitmodel, title=args.title)
+
+    if args.plot_fit:
+        plotter.Z_fit(data, fitmodel, title=args.title)        
 
     if args.output_filename is not None:
         savefig(args.output_filename, bbox_inches='tight')
