@@ -41,7 +41,7 @@ steps in each range is 20 can be altered with the `--steps` argument.
 The impedance of the data and model can be plotted using:
 
 ```
-   $ zfitter --net "L('L1') + (R('R1') | (L('L2') + R('R2')))" --ranges="{'R1':(0,5e3),'L1':(1e-3,20e-3),'R2':(0,0.1),'L2':(1e-3,20e-3)}" --input demo/E4990A-example1.csv --plot-fit
+   $ zfitter --plot-fit --net "L('L1') + (R('R1') | (L('L2') + R('R2')))" --ranges="{'R1':(0,5e3),'L1':(1e-3,20e-3),'R2':(0,0.1),'L2':(1e-3,20e-3)}" --input demo/E4990A-example1.csv
 ```
    
 ![](doc/fit1.png)
@@ -49,7 +49,7 @@ The impedance of the data and model can be plotted using:
 The impedance error between the data and model can be plotted using:
 
 ```
-   $ zfitter --net "L('L1') + (R('R1') | (L('L2') + R('R2')))" --ranges="{'R1':(0,5e3),'L1':(1e-3,20e-3),'R2':(0,0.1),'L2':(1e-3,20e-3)}" --input demo/E4990A-example1.csv --plot-error
+   $ zfitter --plot-error --net "L('L1') + (R('R1') | (L('L2') + R('R2')))" --ranges="{'R1':(0,5e3),'L1':(1e-3,20e-3),'R2':(0,0.1),'L2':(1e-3,20e-3)}" --input demo/E4990A-example1.csv
 ```
 
 ![](doc/error1.png)
