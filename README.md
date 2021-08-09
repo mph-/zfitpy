@@ -55,6 +55,22 @@ The impedance error between the data and model can be plotted using:
 ![](doc/error1.png)
 
 
+Here's another network using a constant phase element (CPE).
+
+``` bash
+   $ zfitter --net "(CPE('K', 'alpha') | R('R2')) + R('R1')" --draw
+```
+
+![](doc/CPE2.png)
+
+
+```
+   $ zfitter --plot-error --net "(CPE('K', 'alpha') | R('R2')) + R('R1')"  --ranges="{'R1':(0,1e3),'K':(1e-3,1e3),'alpha':(-1,1),'R2':(1e2,1e4)}" --input demo/E4990A-example1.csv
+```
+
+![](doc/error2.png)
+
+
 The command line options for zfitter can be found with the `--help` argument.
 
 
