@@ -71,7 +71,15 @@ Here's another network using a constant phase element (CPE).
 ![](doc/error2.png)
 
 
-The command line options for zfitter can be found with the `--help` argument.
+The data format for the plots depends on the extension.  matplotlib is
+used for the plotting and so the pdf, png, pgf, and jpg formats are
+all supported.   For example:
+
+``` bash
+   $ zfitter --net "CPE('K', 'alpha')" --draw --output CPE.png
+```
+
+Other command line options for zfitter can be found with the --help argument.
 
 
 
