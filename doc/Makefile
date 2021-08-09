@@ -165,10 +165,10 @@ figs: ../demo/E4990A-example1a.png ../demo/E4990A-example1b.png ../demo/E4990A-e
 	cd $(dir $@); python3 $(notdir $^)
 
 Parallel2SeriesRLModel.png:
-	zmodel-draw Parallel2SeriesRLModel $@
+	zfitter --draw --model Parallel2SeriesRLModel --output $@
 
 ParallelRCPEModel.png:
-	zmodel-draw ParallelRCPEModel $@
+	zfitter --draw --model ParallelRCPEModel --output $@
 
 SeriesRParallelRCPEModel.png:
-	zmodel-draw SeriesRParallelRCPEModel $@
+	zfitter --draw --model SeriesRParallelRCPEModel --output $@
