@@ -93,7 +93,7 @@ def main():
         if args.nyquist:
             plotter.Z_nyquist(data, None, title=args.title)
         else:
-            plotter.Z(data, fitmodel, title=args.title)                        
+            plotter.Z_fit(data, None, title=args.title, magphase=args.magphase)
 
     if args.output_filename is not None:
         savefig(args.output_filename, bbox_inches='tight')

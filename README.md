@@ -79,6 +79,16 @@ all supported.   For example:
    $ zfitter --net "CPE('K', 'alpha')" --draw --output CPE.png
 ```
 
+The data can be plotted without fitting if the `ranges` argument is not specified.  For example:
+
+``` bash
+   $ zfitter --plot-data --input demo/E4990A-example1.csv
+```
+
+![](doc/data.png)
+
+A Nyquist plot is generated if the `--nyquist` option is specified.   Magnitude and phase is plotted is the `--magphase` option is specified.
+
 Other command line options for zfitter can be found with the --help argument.
 
 
