@@ -23,6 +23,20 @@ class KeysightE4990AImpedanceData(ImpedanceData):
         self.filename = basename(filename)
         self.name, ext = splitext(basename(filename.lower()))
 
+
+class GenericImpedanceData(ImpedanceData):
+
+    def __init__(self, filename):
+
+        foo = np.loadtxt(filename, skiprows=0, delimiter=',', comments='#')
+        if foo.shape[1] != 3:
+            raise ValueError('Expecting 3 columns (frequency, real, imag')
+        
+        self.f = foo[:, 0]
+        self.Z = foo[:, 1] + 1j * foo[:, 2]
+        self.filename = basename(filename)
+        self.name, ext = splitext(basename(filename.lower()))        
+
         
 def impedancedata(filename):
 
@@ -30,6 +44,11 @@ def impedancedata(filename):
         return KeysightE4990AImpedanceData(filename)
     except:
         pass
+
+    try:
+        return GenericImpedanceData(filename)
+    except:
+        pass    
 
     # Add support for other data formats.
     
