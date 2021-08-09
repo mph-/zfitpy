@@ -22,6 +22,7 @@ setup(name='zfitter',
       entry_points={
           'console_scripts': [
               'zmodel-draw=zfitter.scripts.zmodel_draw:main',
+              'zfitter=zfitter.scripts.zfitter:main',              
           ],
       },                    
       classifiers=[

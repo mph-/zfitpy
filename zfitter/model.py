@@ -1,10 +1,18 @@
-from lcapy import f
+from lcapy import f, R, C, L, CPE
 import numpy as np
 
 models = {}
 
-def modelmake(name, net, paramnames):
+def modelmake(name, net, paramnames=None):
 
+    if isinstance(net, str):
+        net = eval(net)
+    
+    if paramnames is None:
+        Z = eval('(%s).Z(f)' % net)
+        paramnames = Z.symbols
+        paramnames.pop('f')
+    
     params = ', '.join(paramnames)
     
     docstring = name + '(' + params + '): ' + str(net)
