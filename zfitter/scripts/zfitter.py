@@ -43,10 +43,11 @@ def main():
     parser = ArgumentParser(description='Draw schematic of impedance model.')
     parser.add_argument('--version', action='version', version=__doc__.split('\n')[0])
     parser.add_argument('--modelname', type=str, help='model name')
-    parser.add_argument('--net', type=str, help='treat model as network')
+    parser.add_argument('--net', type=str,
+                        help="specify network, e.g., R('R1') + L('L1')")
     parser.add_argument('--input_filename', type=str, help='input filename')    
     parser.add_argument('--output_filename', type=str, help='output filename')
-    parser.add_argument('--ranges', type=str, help='search ranges')
+    parser.add_argument('--ranges', type=str, help="specify search ranges, e.g.,  {'R1':(0,1),'L1':(10,20)}")
     parser.add_argument('--draw', action='store_true', default=False, help='draw network')
     parser.add_argument('--show', action='store_true', default=False, help='show plot')
     parser.add_argument('--plot-error', action='store_true', default=False, help='plot impedance error')
@@ -57,7 +58,7 @@ def main():
     args = parser.parse_args()
 
     if not args.net and not args.modelname:
-        raise ValueError('Either need to specify model name with --modelname to network with --net')
+        raise ValueError('Either need to specify model name with --modelname or network with --net')
 
     if args.net:
         Model = modelmake('Model', args.net)
