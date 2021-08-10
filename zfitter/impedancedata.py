@@ -16,10 +16,20 @@ class KeysightE4990AImpedanceData(ImpedanceData):
         lines = open(filename).readlines()
         if not lines[0].startswith('!Agilent Technologies,E4990A'):
             raise ValueError('Not Keysight E4990A')
+
+        if lines[4].startswith('Frequency(Hz), |Z|(Ohm)-data, theta-z(deg)-data'):
+            foo = np.loadtxt(filename, skiprows=5, delimiter=',', comments='END')
+            self.f = foo[:, 0]
+            self.Z = (np.cos(np.radians(foo[:, 2])) + 1j * np.sin(np.radians(foo[:, 2]))) * foo[:, 1]
+
+        elif lines[4].startswith('Frequency(Hz), R(Ohm)-data, X(Ohm)-data'):
         
-        foo = np.loadtxt(filename, skiprows=5, delimiter=',', comments='END')
-        self.f = foo[:, 0]
-        self.Z = foo[:, 1] + 1j * foo[:, 2]
+            foo = np.loadtxt(filename, skiprows=5, delimiter=',', comments='END')
+            self.f = foo[:, 0]
+            self.Z = foo[:, 1] + 1j * foo[:, 2]
+        else:
+            raise ValueError('Unhandled format for Keysight E4990A')
+
         self.filename = basename(filename)
         self.name, ext = splitext(basename(filename.lower()))
 

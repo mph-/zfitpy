@@ -36,7 +36,7 @@ The network in this example has four parameters: `R1`, `L1`, `R2`, and
 specified ranges; this is refined with a finishing search.  The ranges
 are specified as a Python dictionary, keyed by component name, with
 the range for each component specified as a tuple.  The number of
-steps in each range is 20 can be altered with the `--steps` argument.
+steps in each range is 20 can be altered with the `--steps` option.
 
 The impedance of the data and model can be plotted using:
 
@@ -79,7 +79,7 @@ all supported.   For example:
    $ zfitter --net "CPE('K', 'alpha')" --draw --output CPE.png
 ```
 
-The data can be plotted without fitting if the `ranges` argument is not specified.  For example:
+The data can be plotted without fitting if the `ranges` option is not specified.  For example:
 
 ``` bash
    $ zfitter --plot-data --input demo/E4990A-example1.csv
@@ -89,7 +89,7 @@ The data can be plotted without fitting if the `ranges` argument is not specifie
 
 A Nyquist plot is generated if the `--nyquist` option is specified.   Magnitude and phase is plotted is the `--magphase` option is specified.  The plot style can be altered using the `--style` option to specify a Matplotlib style file.
 
-Other command line options for zfitter can be found with the --help argument.
+Other command line options for zfitter can be found with the --help option.
 
 
 
