@@ -26,6 +26,7 @@ def modelmake(name, net, paramnames=None):
 class Model(object):
 
     Zcode = None
+    error = 0
 
     def __init__(self, *args):
         """Create model instance."""

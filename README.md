@@ -92,5 +92,22 @@ A Nyquist plot is generated if the `--nyquist` option is specified.   Magnitude 
 Other command line options for zfitter can be found with the --help option.
 
 
+Here's an example of how the fitting can be performed using a Python script:
 
+``` python
+from zfitter import zfit
 
+net = "(CPE('K', 'alpha') | R('R2')) + R('R1')"
+ranges = {'R1': (1e-3, 1e3), 'K': (1e-3, 1e3), 'alpha': (-1, 1), 'R2': (100, 1e4)}
+
+data, fitmodel = zfit('E4990A-example1.csv', net, ranges, Ns=10)
+print(fitmodel)
+print(fitmodel.error)
+```
+
+The error between the measured data and best-fit model can be plotted using:
+
+``` python
+from zfitter import Plotter
+plotter.Z_error(data, fitmodel)
+```

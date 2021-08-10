@@ -9,7 +9,6 @@ class ZFitter(object):
         self.verbose = verbose
         self.f = f
         self.Z = Z
-        self.error = 0
 
     def zmodel_error(self, params):
 
@@ -38,5 +37,8 @@ class ZFitter(object):
         else:
             params, fval, foo, bar = brute(self.zmodel_error, ranges, Ns=Ns, args=(), full_output=1, finish=None)
 
-        self.error = fval
-        return self._model(*params)
+        model = self._model(*params)
+        model.error = fval
+        return model
+    
+        
