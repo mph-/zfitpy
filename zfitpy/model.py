@@ -15,7 +15,8 @@ def modelmake(name, net, paramnames=None):
     if paramnames is None:
         Z = eval('(%s).Z(f)' % net)
         paramnames = Z.symbols
-        paramnames.pop('f')
+        paramnames.pop('t', None)
+        paramnames.pop('f', None)
     
     params = ', '.join(paramnames)
     
@@ -30,6 +31,8 @@ def modelmake(name, net, paramnames=None):
 class Model(object):
 
     Zcode = None
+    ycode = None    
+    zcode = None        
     error = 0
 
     def __init__(self, *args):
@@ -97,32 +100,34 @@ class Model(object):
 
         return i
 
-    def zimpulse(self, t):    
-
-        raise ValueError('Method zimpulse not defined for %s' % self.__class__.__name__)
-
-    def yimpulse(self, t):    
-
-        raise ValueError('Method yimpulse not defined for %s' % self.__class__.__name__)    
-
-
     def draw(self, filename=None):
 
         self.net.draw(filename)
 
-    def _Zbuild(self):
+    def _build(self, foo, name):
     
-        Z = self.net.Z(f)
+        paramnames = foo.symbols
+        paramnames.pop('t', None)
+        paramnames.pop('f', None)        
         
-        paramnames = Z.symbols
-        paramnames.pop('f')
-        
-        Zcodestr = str(Z)
+        codestr = str(foo)
         for p in paramnames:
-            Zcodestr = Zcodestr.replace(p, 'self.' + p)
-        Zcode = compile(Zcodestr, 'Z', 'eval')
+            codestr = codestr.replace(p, 'self.' + p)
+        code = compile(codestr, name, 'eval')
 
-        return Zcode
+        return code
+
+    def _Zbuild(self):    
+
+        return self._build(self.net.Z(f), 'Z')
+
+    def _zbuild(self):    
+
+        return self._build(self.net.Z(t), 'z')
+
+    def _ybuild(self):    
+
+        return self._build(self.net.Y(t), 'y')            
         
     def Z(self, f):
         """Return impedance at frequency `f`; `f` can be an ndarray."""
@@ -154,3 +159,25 @@ class Model(object):
             parts.append('%s=%.2e%s' % (var, val, units))
 
         return ', '.join(parts)
+
+    def zimpulse(self, t):    
+
+        if self.zcode is None:
+            # Cache result for class
+            self.__class__.zcode = self._zbuild()
+        
+        j = 1j
+        pi = np.pi
+        
+        return eval(self.zcode)
+
+    def yimpulse(self, t):
+
+        if self.ycode is None:
+            # Cache result for class
+            self.__class__.Zcode = self._ybuild()
+        
+        j = 1j
+        pi = np.pi
+        
+        return eval(self.ycode)        
