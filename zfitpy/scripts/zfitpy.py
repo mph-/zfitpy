@@ -12,6 +12,20 @@ from zfitpy.model import models, modelmake
 from zfitpy import ZFitter
 from zfitpy import Plotter
 from zfitpy import impedancedata
+import sys
+
+def zfitpy_exception(type, value, tb):
+   if hasattr(sys, 'ps1') or not sys.stderr.isatty():
+      # We are not in interactive mode or we don't have a tty-like
+      # device, so call the default hook
+      sys.__excepthook__(type, value, tb)
+   else:
+      import traceback, pdb
+      # We are in interactive mode, print the exception...
+      traceback.print_exception(type, value, tb)
+      print()
+      # ...then start the debugger in post-mortem mode.
+      pdb.pm()
 
 def model_make(args):
 
@@ -50,10 +64,16 @@ def main():
     parser.add_argument('--title', type=str, help='title for plot')
     parser.add_argument('--steps', type=int, default=20,
                         help='the number of search steps per range')
+    parser.add_argument('--pdb', action='store_true',
+                        default=False,
+                        help="enter python debugger on exception")    
     parser.add_argument('--style', type=str, help='matplotlib style filename')
 
     args = parser.parse_args()
 
+    if args.pdb:
+        sys.excepthook = zfitpy_exception
+    
     if args.style:
         style.use(args.style)
     
@@ -79,9 +99,9 @@ def main():
     else:
 
         Model = model_make(args)
-        zfitpy = ZFitter(Model, data.f, data.Z)            
-        fitmodel = zfitpy(ranges=args.ranges, Ns=args.steps)
-        print('%s, error=%.3e' % (fitmodel, zfitpy.error))
+        zfitter = ZFitter(Model, data.f, data.Z)            
+        fitmodel = zfitter(ranges=args.ranges, Ns=args.steps)
+        print('%s, error=%.3e' % (fitmodel, fitmodel.error))
     
     plotter = Plotter()
     if args.plot_error and fitmodel:
