@@ -1,3 +1,7 @@
+"""This module parses impedance data.
+
+Copyright 2021 Michael Hayes, UCECE"""
+
 import numpy as np
 from os.path import basename, splitext
 

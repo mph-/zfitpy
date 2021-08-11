@@ -1,3 +1,7 @@
+"""This module provides plotting support for impedance data.
+
+Copyright 2021 Michael Hayes, UCECE"""
+
 from matplotlib.pyplot import subplots
 from numpy import degrees, angle
 

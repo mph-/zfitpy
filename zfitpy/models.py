@@ -1,3 +1,7 @@
+"""This module provides named electrical models.
+
+Copyright 2021 Michael Hayes, UCECE"""
+
 from lcapy import R, L, C, Par, CPE
 from zfitter.model import Model, modelmake
         

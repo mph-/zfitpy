@@ -19,13 +19,13 @@ Zfitter is a command-line Python program.  It is designed for fitting
 electrical models to impedance data.   For example:
 
 ``` bash
-   $ zfitter --net "L('L1') + (R('R1') | (L('L2') + R('R2')))" --ranges="{'R1':(0,5e3),'L1':(1e-3,20e-3),'R2':(0,0.1),'L2':(1e-3,20e-3)}" --input demo/E4990A-example1.csv --plot-error
+   $ zfitpy --net "L('L1') + (R('R1') | (L('L2') + R('R2')))" --ranges="{'R1':(0,5e3),'L1':(1e-3,20e-3),'R2':(0,0.1),'L2':(1e-3,20e-3)}" --input demo/E4990A-example1.csv --plot-error
 ```
    
 The network is specified using Lcapy notation for networks.  This example uses a network comprised of a parallel combination of RL series networks.  The network can be drawn using:
 
 ``` bash
-   $ zfitter --net "L('L1') + (R('R1') | (L('L2') + R('R2')))" --draw
+   $ zfitpy --net "L('L1') + (R('R1') | (L('L2') + R('R2')))" --draw
 ```
 
 ![](doc/RL2.png)
@@ -41,7 +41,7 @@ steps in each range is 20 can be altered with the `--steps` option.
 The impedance of the data and model can be plotted using:
 
 ```
-   $ zfitter --plot-fit --net "L('L1') + (R('R1') | (L('L2') + R('R2')))" --ranges="{'R1':(0,5e3),'L1':(1e-3,20e-3),'R2':(0,0.1),'L2':(1e-3,20e-3)}" --input demo/E4990A-example1.csv
+   $ zfitpy --plot-fit --net "L('L1') + (R('R1') | (L('L2') + R('R2')))" --ranges="{'R1':(0,5e3),'L1':(1e-3,20e-3),'R2':(0,0.1),'L2':(1e-3,20e-3)}" --input demo/E4990A-example1.csv
 ```
    
 ![](doc/fit1.png)
@@ -49,7 +49,7 @@ The impedance of the data and model can be plotted using:
 The impedance error between the data and model can be plotted using:
 
 ```
-   $ zfitter --plot-error --net "L('L1') + (R('R1') | (L('L2') + R('R2')))" --ranges="{'R1':(0,5e3),'L1':(1e-3,20e-3),'R2':(0,0.1),'L2':(1e-3,20e-3)}" --input demo/E4990A-example1.csv
+   $ zfitpy --plot-error --net "L('L1') + (R('R1') | (L('L2') + R('R2')))" --ranges="{'R1':(0,5e3),'L1':(1e-3,20e-3),'R2':(0,0.1),'L2':(1e-3,20e-3)}" --input demo/E4990A-example1.csv
 ```
 
 ![](doc/error1.png)
@@ -58,14 +58,14 @@ The impedance error between the data and model can be plotted using:
 Here's another network using a constant phase element (CPE).
 
 ``` bash
-   $ zfitter --net "(CPE('K', 'alpha') | R('R2')) + R('R1')" --draw
+   $ zfitpy --net "(CPE('K', 'alpha') | R('R2')) + R('R1')" --draw
 ```
 
 ![](doc/CPE2.png)
 
 
 ```
-   $ zfitter --plot-error --net "(CPE('K', 'alpha') | R('R2')) + R('R1')"  --ranges="{'R1':(0,1e3),'K':(1e-3,1e3),'alpha':(-1,1),'R2':(1e2,1e4)}" --input demo/E4990A-example1.csv
+   $ zfitpy --plot-error --net "(CPE('K', 'alpha') | R('R2')) + R('R1')"  --ranges="{'R1':(0,1e3),'K':(1e-3,1e3),'alpha':(-1,1),'R2':(1e2,1e4)}" --input demo/E4990A-example1.csv
 ```
 
 ![](doc/error2.png)
@@ -76,26 +76,26 @@ used for the plotting and so the pdf, png, pgf, and jpg formats are
 all supported.   For example:
 
 ``` bash
-   $ zfitter --net "CPE('K', 'alpha')" --draw --output CPE.png
+   $ zfitpy --net "CPE('K', 'alpha')" --draw --output CPE.png
 ```
 
 The data can be plotted without fitting if the `ranges` option is not specified.  For example:
 
 ``` bash
-   $ zfitter --plot-data --input demo/E4990A-example1.csv
+   $ zfitpy --plot-data --input demo/E4990A-example1.csv
 ```
 
 ![](doc/data.png)
 
 A Nyquist plot is generated if the `--nyquist` option is specified.   Magnitude and phase is plotted is the `--magphase` option is specified.  The plot style can be altered using the `--style` option to specify a Matplotlib style file.
 
-Other command line options for zfitter can be found with the --help option.
+Other command line options for zfitpy can be found with the --help option.
 
 
 Here's an example of how the fitting can be performed using a Python script:
 
 ``` python
-from zfitter import zfit
+from zfitpy import zfit
 
 net = "(CPE('K', 'alpha') | R('R2')) + R('R1')"
 ranges = {'R1': (1e-3, 1e3), 'K': (1e-3, 1e3), 'alpha': (-1, 1), 'R2': (100, 1e4)}
@@ -108,6 +108,6 @@ print(fitmodel.error)
 The error between the measured data and best-fit model can be plotted using:
 
 ``` python
-from zfitter import Plotter
+from zfitpy import Plotter
 plotter.Z_error(data, fitmodel)
 ```

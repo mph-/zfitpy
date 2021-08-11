@@ -1,3 +1,7 @@
+"""This module is a wrapper for the SciPy optimizers
+
+Copyright 2021 Michael Hayes, UCECE"""
+
 import numpy as np
 from scipy.signal import resample
 from scipy.optimize import fminbound, brute, fmin

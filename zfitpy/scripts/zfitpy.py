@@ -1,17 +1,17 @@
 #!/usr/bin/python3
-"""zfitter V0.2
+"""zfitpy V0.2
 Copyright (c) 2021 Michael P. Hayes, UC ECE, NZ
 
-Usage: zfitter modelname input-filename output-filename
+Usage: zfitpy modelname input-filename output-filename
 """
 
 from __future__ import print_function
 from matplotlib.pyplot import show, savefig, style
 from argparse import ArgumentParser
-from zfitter.model import models, modelmake
-from zfitter import ZFitter
-from zfitter import Plotter
-from zfitter import impedancedata
+from zfitpy.model import models, modelmake
+from zfitpy import ZFitter
+from zfitpy import Plotter
+from zfitpy import impedancedata
 
 def model_make(args):
 
@@ -79,9 +79,9 @@ def main():
     else:
 
         Model = model_make(args)
-        zfitter = ZFitter(Model, data.f, data.Z)            
-        fitmodel = zfitter(ranges=args.ranges, Ns=args.steps)
-        print('%s, error=%.3e' % (fitmodel, zfitter.error))
+        zfitpy = ZFitter(Model, data.f, data.Z)            
+        fitmodel = zfitpy(ranges=args.ranges, Ns=args.steps)
+        print('%s, error=%.3e' % (fitmodel, zfitpy.error))
     
     plotter = Plotter()
     if args.plot_error and fitmodel:

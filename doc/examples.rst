@@ -3,12 +3,12 @@ Examples
 
 To plot the error between the best fit and the measure data use::
 
-   $ zfitter --net "L('L1') + (R('R1') | (L('L2') + R('R2')))" --ranges="{'R1':(0,5e3),'L1':(1e-3,20e-3),'R2':(0,0.1),'L2':(1e-3,20e-3)}" --input demo/E4990A-example1.csv --plot-error
+   $ zfitpy --net "L('L1') + (R('R1') | (L('L2') + R('R2')))" --ranges="{'R1':(0,5e3),'L1':(1e-3,20e-3),'R2':(0,0.1),'L2':(1e-3,20e-3)}" --input demo/E4990A-example1.csv --plot-error
 
 
 To draw the model use::
 
-   $ zfitter --net "L('L1') + (R('R1') | (L('L2') + R('R2')))" --draw
+   $ zfitpy --net "L('L1') + (R('R1') | (L('L2') + R('R2')))" --draw
    
 
 .. image:: Parallel2SeriesRLModel.png

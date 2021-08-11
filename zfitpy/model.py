@@ -1,3 +1,7 @@
+"""This module provides the impedance Model class.
+
+Copyright 2021 Michael Hayes, UCECE"""
+
 from lcapy import f, G, R, C, L, CPE, Par, Ser
 import numpy as np
 
@@ -141,6 +145,9 @@ class Model(object):
 
         parts = []
         for var, val in vars(self).items():
+            if var == 'error':
+                continue
+            
             units = {'R': ' ohms', 'C': ' F', 'L': ' H', 'K':'', 'a':''}[var[0]]
 
             # Could convert units to have SI prefixes

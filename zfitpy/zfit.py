@@ -1,3 +1,7 @@
+"""This module provides a simple function for impedance data fitting.
+
+Copyright 2021 Michael Hayes, UCECE"""
+
 from .impedancedata import ImpedanceData, impedancedata
 from .model import modelmake, Model
 from .zfitter import ZFitter
