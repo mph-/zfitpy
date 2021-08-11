@@ -12,8 +12,8 @@ The easiest way is using the command line command:
    $ pip install .
    
    
-Zfitter
-=======
+Zfitpy
+======
 
 Zfitter is a command-line Python program.  It is designed for fitting
 electrical models to impedance data.   For example:
@@ -91,6 +91,9 @@ A Nyquist plot is generated if the `--nyquist` option is specified.   Magnitude 
 
 Other command line options for zfitpy can be found with the --help option.
 
+
+Zfit
+====
 
 Here's an example of how the fitting can be performed using a Python script:
 
