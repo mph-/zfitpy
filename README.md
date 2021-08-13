@@ -1,7 +1,7 @@
 Introduction
 ============
 
-This Python module is for fitting impedance data to electrical models.   It also includes a command-line program to assist with automated fitting.
+This Python module is for fitting electrical models to measured impedance data.   It also includes a command-line program to assist with automated fitting.
 
 
 Installation
@@ -15,7 +15,7 @@ The easiest way is using the command line command:
 zfit
 ====
 
-Here's an example of how impedance fitting can be performed using a Python script:
+Here's an example of how model fitting can be performed using a Python script:
 
 ``` python
 from zfitpy import zfit

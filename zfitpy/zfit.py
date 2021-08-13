@@ -1,4 +1,4 @@
-"""This module provides a simple function for impedance data fitting.
+"""This module provides a simple function for fitting an electric model to measured impedance data.
 
 Copyright 2021 Michael Hayes, UCECE"""
 
