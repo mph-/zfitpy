@@ -4,6 +4,8 @@ from setuptools import setup, find_packages
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+tests_require = ['nose', 'flake8', 'flake8-bugbear', 'flake8-comprehensions', 'flake8-requirements']
+    
 setup(name='zfitpy',
       version='0.2',
       author='Michael Hayes',
@@ -16,8 +18,16 @@ setup(name='zfitpy',
       install_requires=['matplotlib',
                         'numpy',
                         'scipy',
-                        'lcapy'                        
+                        'lcapy',
+                        'setuptools',
       ],
+      python_requires='>=3.6',
+      extras_require={
+          'test': tests_require,
+          'doc': ['sphinx', 'ipython'],
+          'release': ['wheel', 'twine'],
+      },
+      tests_require=tests_require,      
       packages=find_packages(),
       entry_points={
           'console_scripts': [

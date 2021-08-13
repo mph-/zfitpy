@@ -3,7 +3,7 @@
 Copyright 2021 Michael Hayes, UCECE"""
 
 from lcapy import R, L, C, Par, CPE
-from zfitter.model import Model, modelmake
+from .model import Model, modelmake
         
 SeriesRLModel = modelmake('SeriesRLModel', R('R1') + L('L1'), ('R1', 'L1'))
 SeriesRCModel = modelmake('SeriesRCModel', R('R1') + C('C1'), ('R1', 'C1'))
