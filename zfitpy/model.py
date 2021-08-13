@@ -1,8 +1,16 @@
 """This module provides the impedance Model class.
 
-Copyright 2021 Michael Hayes, UCECE"""
+Models can be dynamically created given a network described using
+Lcapy network syntax, e.g., "R('R1') + L('L1') | R('R2')".
 
-from lcapy import f, G, R, C, L, CPE, Par, Ser
+Impedances are calculated using Lcapy.  To speed up evaluations, the
+impedance calculating code is lazily compiled and cached.
+
+Copyright 2021 Michael Hayes, UCECE
+
+"""
+
+from lcapy import f, t, G, R, C, L, CPE, Par, Ser
 import numpy as np
 
 models = {}
@@ -30,9 +38,7 @@ def modelmake(name, net, paramnames=None):
 
 class Model(object):
 
-    Zcode = None
-    ycode = None    
-    zcode = None        
+    _Zcode = None
     error = 0
 
     def __init__(self, *args):
@@ -51,56 +57,19 @@ class Model(object):
 
         return self.v(i, t)
 
-    def v(self, i, t):        
+    def v(self, i, t):
+        """Calculate voltage drop across the network given a current signal."""
 
-        h, d, dd = self.zimpulse(t - t[0])
-
-        v = 0
-        if not h is 0:
-            dt = t[1] - t[0]
-            v = v + np.convolve(i, h, mode='full')[0:len(t)] * dt
-
-        if not d is 0:
-            v = v + d * i
-
-        if not dd is 0:
-
-            if False:
-                I = np.fft.rfft(i)
-                dt = t[1] - t[0]            
-                f = np.fft.rfftfreq(len(i), dt)
-                didt = np.fft.irfft(I * 2j * np.pi * f)
-                v = v + dd * didt                
-            else:
-                if True:
-                    # Central differences
-                    didt = np.gradient(i, t)
-                else:
-                    dt = t[1] - t[0]                                
-                    didt = np.diff(i, append=0) / dt
-                v = v + dd * didt
-
-        return v
+        return self.net.subs(vars(self)).Z.response(i, t)
     
     def i(self, v, t):
+        """Calculate current through the network given an applied voltage
+        signal."""        
 
-        h, d, dd = self.yimpulse(t - t[0])
-
-        i = 0
-        if not h is 0:
-            dt = t[1] - t[0]
-            i = i + np.convolve(v, h, mode='full')[0:len(t)] * dt
-
-        if not d is 0:
-            i = i + d * v
-
-        if not dd is 0:
-            dvdt = np.gradient(v, t)
-            i = i + dd * dvdt
-
-        return i
+        return self.net.subs(vars(self)).Y.response(v, t)        
 
     def draw(self, filename=None):
+        """Draw the network."""
 
         self.net.draw(filename)
 
@@ -121,25 +90,17 @@ class Model(object):
 
         return self._build(self.net.Z(f), 'Z')
 
-    def _zbuild(self):    
-
-        return self._build(self.net.Z(t), 'z')
-
-    def _ybuild(self):    
-
-        return self._build(self.net.Y(t), 'y')            
-        
     def Z(self, f):
         """Return impedance at frequency `f`; `f` can be an ndarray."""
 
-        if self.Zcode is None:
+        if self._Zcode is None:
             # Cache result for class
-            self.__class__.Zcode = self._Zbuild()
+            self.__class__._Zcode = self._Zbuild()
         
         j = 1j
         pi = np.pi
         
-        return eval(self.Zcode)
+        return eval(self._Zcode)
     
     def Y(self, f):
         """Return admittance at frequency `f`; `f` can be an ndarray."""        
@@ -159,25 +120,3 @@ class Model(object):
             parts.append('%s=%.2e%s' % (var, val, units))
 
         return ', '.join(parts)
-
-    def zimpulse(self, t):    
-
-        if self.zcode is None:
-            # Cache result for class
-            self.__class__.zcode = self._zbuild()
-        
-        j = 1j
-        pi = np.pi
-        
-        return eval(self.zcode)
-
-    def yimpulse(self, t):
-
-        if self.ycode is None:
-            # Cache result for class
-            self.__class__.Zcode = self._ybuild()
-        
-        j = 1j
-        pi = np.pi
-        
-        return eval(self.ycode)        

@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(name='zfitpy',
-      version='0.1.0',
+      version='0.2',
       author='Michael Hayes',
       author_email='michael.hayes@canterbury.ac.nz',
       description='Impedance model fitting',      
