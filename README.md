@@ -10,12 +10,36 @@ Installation
 The easiest way is using the command line command:
 
    $ pip install .
+
+
+zfit
+====
+
+Here's an example of how impedance fitting can be performed using a Python script:
+
+``` python
+from zfitpy import zfit
+
+net = "(CPE('K', 'alpha') | R('R2')) + R('R1')"
+ranges = {'R1': (1e-3, 1e3), 'K': (1e-3, 1e3), 'alpha': (-1, 1), 'R2': (100, 1e4)}
+
+data, fitmodel = zfit('E4990A-example1.csv', net, ranges, Ns=10)
+print(fitmodel)
+print(fitmodel.error)
+```
+
+The error between the measured data and best-fit model can be plotted using:
+
+``` python
+from zfitpy import Plotter
+plotter.Z_error(data, fitmodel)
+```
+
    
-   
-Zfitpy
+zfitpy
 ======
 
-Zfitter is a command-line Python program.  It is designed for fitting
+zfitpy is a command-line Python program.  It is designed for fitting
 electrical models to impedance data.   For example:
 
 ``` bash
@@ -90,27 +114,3 @@ The data can be plotted without fitting if the `ranges` option is not specified.
 A Nyquist plot is generated if the `--nyquist` option is specified.   Magnitude and phase is plotted is the `--magphase` option is specified.  The plot style can be altered using the `--style` option to specify a Matplotlib style file.
 
 Other command line options for zfitpy can be found with the --help option.
-
-
-Zfit
-====
-
-Here's an example of how the fitting can be performed using a Python script:
-
-``` python
-from zfitpy import zfit
-
-net = "(CPE('K', 'alpha') | R('R2')) + R('R1')"
-ranges = {'R1': (1e-3, 1e3), 'K': (1e-3, 1e3), 'alpha': (-1, 1), 'R2': (100, 1e4)}
-
-data, fitmodel = zfit('E4990A-example1.csv', net, ranges, Ns=10)
-print(fitmodel)
-print(fitmodel.error)
-```
-
-The error between the measured data and best-fit model can be plotted using:
-
-``` python
-from zfitpy import Plotter
-plotter.Z_error(data, fitmodel)
-```
