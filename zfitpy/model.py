@@ -30,7 +30,7 @@ def modelmake(name, net, paramnames=None):
     
     docstring = name + '(' + params + '): ' + str(net)
     newclass = type(name, (Model, ), {'__doc__': docstring})
-    newclass.net = net
+    newclass._net = net
     newclass.paramnames = paramnames
     models[name] = newclass
     return newclass
@@ -60,18 +60,18 @@ class Model(object):
     def v(self, i, t):
         """Calculate voltage drop across the network given a current signal."""
 
-        return self.net.subs(vars(self)).Z.response(i, t)
+        return self._net.subs(vars(self)).Z.response(i, t)
     
     def i(self, v, t):
         """Calculate current through the network given an applied voltage
         signal."""        
 
-        return self.net.subs(vars(self)).Y.response(v, t)        
+        return self._net.subs(vars(self)).Y.response(v, t)        
 
     def draw(self, filename=None):
         """Draw the network."""
 
-        self.net.draw(filename)
+        self._net.draw(filename)
 
     def _build(self, foo, name):
     
@@ -88,7 +88,7 @@ class Model(object):
 
     def _Zbuild(self):    
 
-        return self._build(self.net.Z(f), 'Z')
+        return self._build(self._net.Z(f), 'Z')
 
     def Z(self, f):
         """Return impedance at frequency `f`; `f` can be an ndarray."""
@@ -120,3 +120,8 @@ class Model(object):
             parts.append('%s=%.2e%s' % (var, val, units))
 
         return ', '.join(parts)
+
+    @property
+    def net(self):
+        return self._net.subs(vars(self))
+    
