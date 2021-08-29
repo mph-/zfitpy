@@ -25,6 +25,8 @@ class ZFitter(object):
         return rmse
 
     def __call__(self, ranges=None, Ns=10, finish=True):
+        """Ranges is a list of tuples, of the form: (min, max) or (min, max,
+        numsteps).  If `numsteps` is not specified then `Ns` is used."""
 
         if isinstance(ranges, str):
             ranges = eval(ranges)            
@@ -34,12 +36,23 @@ class ZFitter(object):
             ranges = []
             for paramname in self._model.paramnames:
                 ranges.append(rangesdict[paramname])
-        
+
+        oranges = []
+        for r in ranges:
+            if len(r) == 2:
+                # Note, a complex value specifies the number of steps
+                # (see numpy.mgrid).
+                oranges.append(slice(r[0], r[1], complex(Ns)))
+            elif len(r) == 3:
+                oranges.append(slice(r[0], r[1], complex(r[2])))
+            else:
+                raise ValueError('Range %s can only have 2 or 3 values' % r)
+                
         if finish:
             # This calls fmin at finish
-            params, fval, foo, bar = brute(self.zmodel_error, ranges, Ns=Ns, args=(), full_output=1)
+            params, fval, foo, bar = brute(self.zmodel_error, oranges, Ns=Ns, args=(), full_output=1)
         else:
-            params, fval, foo, bar = brute(self.zmodel_error, ranges, Ns=Ns, args=(), full_output=1, finish=None)
+            params, fval, foo, bar = brute(self.zmodel_error, oranges, Ns=Ns, args=(), full_output=1, finish=None)
 
         model = self._model(*params)
         model.error = fval

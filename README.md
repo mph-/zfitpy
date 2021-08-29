@@ -28,6 +28,12 @@ print(fitmodel)
 print(fitmodel.error)
 ```
 
+Here `Ns` specifies the number of steps in each search range.  It can be explicitly defined for each search range, for example,
+
+``` python
+ranges = {'R1': (1e-3, 1e3, 10), 'K': (1e-3, 1e3, 20), 'alpha': (-1, 1), 'R2': (100, 1e4)}
+```
+
 The error between the measured data and best-fit model can be plotted using:
 
 ``` python
