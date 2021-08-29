@@ -1,9 +1,9 @@
 from matplotlib.pyplot import style, savefig
 
-from zfitter import ZFitter
-from zfitter import Plotter
-from zfitter import impedancedata
-from zfitter import SeriesRParallelRLModel
+from zfitpy import ZFitter
+from zfitpy import Plotter
+from zfitpy import impedancedata
+from zfitpy import SeriesRParallelRLModel
 
 style.use('z.mplstyle')
 

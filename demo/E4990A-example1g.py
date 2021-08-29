@@ -1,10 +1,10 @@
 from matplotlib.pyplot import style, savefig
 from lcapy import CPE, R
 
-from zfitter import ZFitter
-from zfitter import Plotter
-from zfitter import impedancedata
-from zfitter import modelmake
+from zfitpy import ZFitter
+from zfitpy import Plotter
+from zfitpy import impedancedata
+from zfitpy import modelmake
 
 style.use('z.mplstyle')
 

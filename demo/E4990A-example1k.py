@@ -1,6 +1,6 @@
 from matplotlib.pyplot import style, savefig
-from zfitter import zfit
-from zfitter import Plotter
+from zfitpy import zfit
+from zfitpy import Plotter
 
 style.use('z.mplstyle')
 
