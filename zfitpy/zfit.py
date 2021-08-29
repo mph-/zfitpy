@@ -6,7 +6,7 @@ from .impedancedata import ImpedanceData, impedancedata
 from .model import modelmake, Model
 from .zfitter import ZFitter
 
-def zfit(data, model, ranges, Ns=10):
+def zfit(data, model, ranges, Ns=10, opt='Z'):
     """Fit impedance data to a model.
 
     `data` can be a filename string or and `ImpedanceData` object
@@ -25,6 +25,6 @@ def zfit(data, model, ranges, Ns=10):
 
     zfitter = ZFitter(model, data.f, data.Z)
         
-    fitmodel = zfitter(ranges=ranges, Ns=Ns)
+    fitmodel = zfitter(ranges=ranges, Ns=Ns, opt=opt)
 
     return data, fitmodel

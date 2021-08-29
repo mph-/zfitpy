@@ -38,6 +38,7 @@ def modelmake(name, net, paramnames=None):
 
 class Model(object):
 
+    _Ycode = None    
     _Zcode = None
     error = 0
 
@@ -86,9 +87,13 @@ class Model(object):
 
         return code
 
+    def _Ybuild(self):    
+
+        return self._build(self._net.Y(f), 'Y')
+
     def _Zbuild(self):    
 
-        return self._build(self._net.Z(f), 'Z')
+        return self._build(self._net.Z(f), 'Z')    
 
     def Z(self, f):
         """Return impedance at frequency `f`; `f` can be an ndarray."""
@@ -103,9 +108,16 @@ class Model(object):
         return eval(self._Zcode)
     
     def Y(self, f):
-        """Return admittance at frequency `f`; `f` can be an ndarray."""        
+        """Return admittance at frequency `f`; `f` can be an ndarray."""
 
-        return 1 / self.Z(f)
+        if self._Ycode is None:
+            # Cache result for class
+            self.__class__._Ycode = self._Ybuild()
+        
+        j = 1j
+        pi = np.pi
+        
+        return eval(self._Ycode)        
 
     def __str__(self):
 

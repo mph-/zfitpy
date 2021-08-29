@@ -14,6 +14,10 @@ class ZFitter(object):
         self.f = f
         self.Z = Z
 
+    @property
+    def Y(self):
+        return 1 / self.Z
+        
     def zmodel_error(self, params):
 
         model = self._model(*params)
@@ -24,7 +28,17 @@ class ZFitter(object):
             print(model, rmse)
         return rmse
 
-    def __call__(self, ranges=None, Ns=10, finish=True):
+    def ymodel_error(self, params):
+
+        model = self._model(*params)
+        Y = model.Y(self.f)
+        Yerr = Y - self.Y
+        rmse = np.sqrt(np.mean(Yerr.real**2 + Yerr.imag**2))
+        if self.verbose:        
+            print(model, rmse)
+        return rmse    
+
+    def __call__(self, ranges=None, Ns=10, finish=True, opt='Z'):
         """Ranges is a list of tuples, of the form: (min, max) or (min, max,
         numsteps).  If `numsteps` is not specified then `Ns` is used."""
 
@@ -47,12 +61,19 @@ class ZFitter(object):
                 oranges.append(slice(r[0], r[1], complex(r[2])))
             else:
                 raise ValueError('Range %s can only have 2 or 3 values' % r)
-                
+
+        if opt == 'Z':
+            func = self.zmodel_error
+        elif opt == 'Y':
+            func = self.ymodel_error
+        else:
+            raise ValueError("Opt must be 'Z' or 'Y'")
+            
         if finish:
             # This calls fmin at finish
-            params, fval, foo, bar = brute(self.zmodel_error, oranges, Ns=Ns, args=(), full_output=1)
+            params, fval, foo, bar = brute(func, oranges, Ns=Ns, args=(), full_output=1)
         else:
-            params, fval, foo, bar = brute(self.zmodel_error, oranges, Ns=Ns, args=(), full_output=1, finish=None)
+            params, fval, foo, bar = brute(func, oranges, Ns=Ns, args=(), full_output=1, finish=None)
 
         model = self._model(*params)
         model.error = fval
