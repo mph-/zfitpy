@@ -41,6 +41,9 @@ from zfitpy import Plotter
 plotter.Z_error(data, fitmodel)
 ```
 
+Note, a parameter names cannot be a substring of another parameter
+name, i.e., 'R' cannot be used if there is a parameter 'R1'.
+
    
 zfitpy
 ======

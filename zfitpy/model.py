@@ -76,11 +76,11 @@ class Model(object):
         self._net.draw(filename)
 
     def _build(self, foo, name):
-    
         paramnames = foo.symbols
         paramnames.pop('t', None)
         paramnames.pop('f', None)        
-        
+
+        # FIXME if have R1 and R since the replacement will fail.
         codestr = str(foo)
         for p in paramnames:
             codestr = codestr.replace(p, 'self.' + p)
