@@ -17,26 +17,34 @@ class ZFitter(object):
     @property
     def Y(self):
         return 1 / self.Z
-        
-    def zmodel_error(self, params):
 
-        model = self._model(*params)
+    def Zerror(self, model):
+        
         Z = model.Z(self.f)
         Zerr = Z - self.Z
         rmse = np.sqrt(np.mean(Zerr.real**2 + Zerr.imag**2))
         if self.verbose:        
             print(model, rmse)
-        return rmse
-
-    def ymodel_error(self, params):
+        return rmse        
+    
+    def Zparams_error(self, params):
 
         model = self._model(*params)
+        return self.Zerror(model)
+
+    def Yerror(self, model):
+
         Y = model.Y(self.f)
         Yerr = Y - self.Y
         rmse = np.sqrt(np.mean(Yerr.real**2 + Yerr.imag**2))
         if self.verbose:        
             print(model, rmse)
-        return rmse    
+        return rmse            
+    
+    def Yparams_error(self, params):
+
+        model = self._model(*params)
+        return self.Yerror(model)        
 
     def __call__(self, ranges=None, Ns=10, finish=True, opt='Z'):
         """Ranges is a list of tuples, of the form: (min, max) or (min, max,
@@ -63,9 +71,9 @@ class ZFitter(object):
                 raise ValueError('Range %s can only have 2 or 3 values' % r)
 
         if opt == 'Z':
-            func = self.zmodel_error
+            func = self.Zparams_error
         elif opt == 'Y':
-            func = self.ymodel_error
+            func = self.Yparams_error
         else:
             raise ValueError("Opt must be 'Z' or 'Y'")
             
