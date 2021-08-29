@@ -7,12 +7,14 @@ from scipy.optimize import curve_fit
 from .zfitterbase import ZFitterBase
 
 class ZFitterCurve(ZFitterBase):
+    """Class for non-linear least-squares usin the trf and dogbox
+    SciPy algorithms."""
 
     def Z_params(self, f, *params):
         Z = self._model(*params).Z(f)
         return np.hstack((Z.real, Z.imag))
 
-    def Y_params(self, *params):
+    def Y_params(self, f, *params):
         Y = self._model(*params).Y(f)
         return np.hstack((Y.real, Y.imag))    
 
@@ -58,6 +60,5 @@ class ZFitterCurve(ZFitterBase):
         model = self._model(*params)
 
         rmse = model.Zrmse(self.f, self.Z)
-        
-        model.error = rmse
-        return model
+        return model, rmse, cov
+    

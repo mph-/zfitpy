@@ -7,6 +7,8 @@ from .zfitterbase import ZFitterBase
 
 
 class ZFitterBrute(ZFitterBase):
+    """Class for non-linear least-squares using the brute force
+    SciPy algorithm."""    
 
     def Zerror_params(self, params):
 
@@ -28,6 +30,8 @@ class ZFitterBrute(ZFitterBase):
         """Ranges is a list of tuples, of the form: (min, max) or (min, max,
         numsteps).  If `numsteps` is not specified then `Ns` is used."""
 
+        kwargs.pop('method', None)
+        
         if opt == 'Z':
             func = self.Zerror_params
         elif opt == 'Y':
@@ -52,5 +56,5 @@ class ZFitterBrute(ZFitterBase):
                                        finish=finish, full_output=1)
 
         model = self._model(*params)
-        model.error = rmse
-        return model
+        return model, rmse, None
+    

@@ -17,11 +17,13 @@ class ZFitter(object):
 
         if method == 'brute':
             fitter = ZFitterBrute(self._model, self.f, self.Z, self.verbose)
-            return fitter.optimize(ranges, opt, **kwargs)
-        elif method in ('trg', 'dogbox'):
+        elif method in ('trf', 'dogbox'):
             fitter = ZFitterCurve(self._model, self.f, self.Z, self.verbose)
-            return fitter.optimize(ranges, opt, **kwargs)
         else:
-            raise ValueError('Unknown method %s: needs to be brute, trg, dogbox' % method)
-        
+            raise ValueError('Unknown method %s: needs to be brute, trf, dogbox' % method)
     
+        model, rmse, cov = fitter.optimize(ranges, opt, method=method, **kwargs)
+        model._rmse = rmse
+        model._cov = cov
+
+        return model

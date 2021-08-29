@@ -40,7 +40,8 @@ class Model(object):
 
     _Ycode = None    
     _Zcode = None
-    error = 0
+    _rmse = 0
+    _cov = None
 
     def __init__(self, *args):
         """Create model instance."""
@@ -123,7 +124,7 @@ class Model(object):
 
         parts = []
         for var, val in vars(self).items():
-            if var == 'error':
+            if var[0] == '_':
                 continue
 
             try:
@@ -151,3 +152,8 @@ class Model(object):
         Zerr = Z - self.Z(f)
         rmse = np.sqrt(np.mean(Zerr.real**2 + Zerr.imag**2))
         return rmse                
+
+    @property
+    def error(self):
+        return self._rmse
+    
