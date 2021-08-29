@@ -6,13 +6,12 @@ from .impedancedata import ImpedanceData, impedancedata
 from .model import modelmake, Model
 from .zfitter import ZFitter
 
-def zfit(data, model, ranges, Ns=10, opt='Z'):
+def zfit(data, model, ranges, method='brute', opt='Z', **kwargs):
     """Fit impedance data to a model.
 
     `data` can be a filename string or and `ImpedanceData` object
     `model` can be a string describing the network model or a `Model` class
     `ranges` is a dictionary of the search ranges for each component
-    `Ns` is the number of search steps in each dimension.
 
     Returns: `ImpedanceData` object and a best-fit `Model` object.
     """
@@ -25,6 +24,6 @@ def zfit(data, model, ranges, Ns=10, opt='Z'):
 
     zfitter = ZFitter(model, data.f, data.Z)
         
-    fitmodel = zfitter(ranges=ranges, Ns=Ns, opt=opt)
+    fitmodel = zfitter(ranges=ranges, method=method, opt=opt, **kwargs)
 
     return data, fitmodel

@@ -10,6 +10,8 @@ name = "zfitpy"
 import pkg_resources
 
 from .zfitter import *
+from .zfitterbrute import *
+from .zfittercurve import *
 from .model import *
 from .plotter import *
 from .impedancedata import *
