@@ -140,14 +140,14 @@ class Model(object):
     def net(self):
         return self._net.subs(vars(self))
     
-    def Yerror(self, data):
+    def Yrmse(self, f, Y):
         
-        Yerr = data.Y - self.Y(data.f)
+        Yerr = Y - self.Y(f)
         rmse = np.sqrt(np.mean(Yerr.real**2 + Yerr.imag**2))
         return rmse
 
-    def Zerror(self, data):
+    def Zrmse(self, f, Z):
         
-        Zerr = data.Z - self.Z(data.f)
+        Zerr = Z - self.Z(f)
         rmse = np.sqrt(np.mean(Zerr.real**2 + Zerr.imag**2))
         return rmse                

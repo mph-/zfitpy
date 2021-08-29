@@ -18,47 +18,24 @@ class ZFitter(object):
     def Y(self):
         return 1 / self.Z
 
-    def Zerror(self, model):
-        
-        Z = model.Z(self.f)
-        Zerr = Z - self.Z
-        rmse = np.sqrt(np.mean(Zerr.real**2 + Zerr.imag**2))
-        if self.verbose:        
-            print(model, rmse)
-        return rmse        
-    
-    def Zparams_error(self, params):
+    def Zerror_params(self, params):
 
         model = self._model(*params)
-        return self.Zerror(model)
-
-    def Yerror(self, model):
-
-        Y = model.Y(self.f)
-        Yerr = Y - self.Y
-        rmse = np.sqrt(np.mean(Yerr.real**2 + Yerr.imag**2))
+        rmse = model.Zrmse(self.f, self.Z)
         if self.verbose:        
-            print(model, rmse)
-        return rmse            
-    
-    def Yparams_error(self, params):
+            print(model, rmse)        
+        return rmse
+
+    def Yerror_params(self, params):
 
         model = self._model(*params)
-        return self.Yerror(model)        
+        rmse = model.Yrmse(self.f, self.Y)
+        if self.verbose:        
+            print(model, rmse)        
+        return rmse
 
-    def __call__(self, ranges=None, Ns=10, finish=True, opt='Z'):
-        """Ranges is a list of tuples, of the form: (min, max) or (min, max,
-        numsteps).  If `numsteps` is not specified then `Ns` is used."""
-
-        if isinstance(ranges, str):
-            ranges = eval(ranges)            
-        
-        if isinstance(ranges, dict):
-            rangesdict = ranges
-            ranges = []
-            for paramname in self._model.paramnames:
-                ranges.append(rangesdict[paramname])
-
+    def _optimize_brute(self, func, ranges, Ns, finish):
+                
         oranges = []
         for r in ranges:
             if len(r) == 2:
@@ -70,21 +47,38 @@ class ZFitter(object):
             else:
                 raise ValueError('Range %s can only have 2 or 3 values' % r)
 
+        if finish:
+            # This calls fmin at finish
+            params, rmse, foo, bar = brute(func, oranges, Ns=Ns, args=(), full_output=1)
+        else:
+            params, rmse, foo, bar = brute(func, oranges, Ns=Ns, args=(), full_output=1, finish=None)
+
+        return params, rmse
+
+    def __call__(self, ranges=None, Ns=10, finish=True, opt='Z'):
+        """Ranges is a list of tuples, of the form: (min, max) or (min, max,
+        numsteps).  If `numsteps` is not specified then `Ns` is used."""
+
         if opt == 'Z':
-            func = self.Zparams_error
+            func = self.Zerror_params
         elif opt == 'Y':
-            func = self.Yparams_error
+            func = self.Yerror_params
         else:
             raise ValueError("Opt must be 'Z' or 'Y'")
             
-        if finish:
-            # This calls fmin at finish
-            params, fval, foo, bar = brute(func, oranges, Ns=Ns, args=(), full_output=1)
-        else:
-            params, fval, foo, bar = brute(func, oranges, Ns=Ns, args=(), full_output=1, finish=None)
+        if isinstance(ranges, str):
+            ranges = eval(ranges)            
+        
+        if isinstance(ranges, dict):
+            rangesdict = ranges
+            ranges = []
+            for paramname in self._model.paramnames:
+                ranges.append(rangesdict[paramname])
+
+        params, error = self._optimize_brute(func, ranges, Ns, finish)
 
         model = self._model(*params)
-        model.error = fval
+        model.error = error
         return model
     
         

@@ -104,4 +104,3 @@ class Plotter(object):
         axes.set_title(title)
         axes.legend()        
         
-            
