@@ -113,8 +113,11 @@ class Model(object):
         for var, val in vars(self).items():
             if var == 'error':
                 continue
-            
-            units = {'R': ' ohms', 'C': ' F', 'L': ' H', 'K':'', 'a':''}[var[0]]
+
+            try:
+                units = {'R': ' ohms', 'C': ' F', 'L': ' H', 'K':'', 'a':''}[var[0]]
+            except KeyError:
+                units = ''
 
             # Could convert units to have SI prefixes
             parts.append('%s=%.2e%s' % (var, val, units))
