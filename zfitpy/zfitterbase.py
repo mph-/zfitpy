@@ -4,9 +4,9 @@ Copyright 2021 Michael Hayes, UCECE"""
 
 class ZFitterBase(object):
 
-    def __init__(self, model, f, Z, verbose=False):
+    def __init__(self, model, f, Z):
         self._model = model
-        self.verbose = verbose
+        self.verbose = 0
         self.f = f
         self.Z = Z
 

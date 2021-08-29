@@ -12,6 +12,8 @@ def zfit(data, model, ranges, method='brute', opt='Z', **kwargs):
     `data` can be a filename string or and `ImpedanceData` object
     `model` can be a string describing the network model or a `Model` class
     `ranges` is a dictionary of the search ranges for each component
+    `model` can be 'brute', 'trf', or 'dogbox'
+    `opt` can be `Y` for admittance fitting or `Z` for impedance fitting
 
     Returns: `ImpedanceData` object and a best-fit `Model` object.
     """

@@ -14,7 +14,7 @@ class ZFitterBrute(ZFitterBase):
 
         model = self._model(*params)
         rmse = model.Zrmse(self.f, self.Z)
-        if self.verbose:        
+        if self.verbose > 1:        
             print(model, rmse)        
         return rmse
 
@@ -22,7 +22,7 @@ class ZFitterBrute(ZFitterBase):
 
         model = self._model(*params)
         rmse = model.Yrmse(self.f, self.Y)
-        if self.verbose:        
+        if self.verbose > 1:        
             print(model, rmse)        
         return rmse
 
@@ -31,6 +31,7 @@ class ZFitterBrute(ZFitterBase):
         numsteps).  If `numsteps` is not specified then `Ns` is used."""
 
         kwargs.pop('method', None)
+        self.verbose = kwargs.pop('verbose', 0)
         
         if opt == 'Z':
             func = self.Zerror_params

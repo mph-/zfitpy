@@ -53,8 +53,7 @@ class ZFitterCurve(ZFitterBase):
         ydata = np.hstack((ydata.real, ydata.imag))
         params, cov = curve_fit(func, self.f, ydata, p0=p0,
                                 bounds=bounds, ftol=ftol, xtol=xtol,
-                                maxfev=maxfev,
-                                verbose=2, **kwargs)
+                                maxfev=maxfev, **kwargs)
         #err = np.sqrt(np.diag(cov))
 
         model = self._model(*params)
