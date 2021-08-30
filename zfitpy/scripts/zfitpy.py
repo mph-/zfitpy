@@ -33,7 +33,11 @@ def model_make(args):
         raise ValueError('Either need to specify model name with --modelname or network with --net')
 
     if args.net:
-        Model = modelmake('Model', args.net)
+        net = args.net
+        if net.endswith('.net'):
+           net = open(net).read()
+       
+        Model = modelmake('Model', net)
 
     if args.modelname:        
         try:
@@ -100,9 +104,13 @@ def main():
         fitmodel = None
     else:
 
+        ranges = args.ranges
+        if ranges.endswith('.ranges'):
+           ranges = open(ranges).read()
+       
         Model = model_make(args)
         zfitter = ZFitter(Model, data.f, data.Z)            
-        fitmodel = zfitter(ranges=args.ranges, Ns=args.steps,
+        fitmodel = zfitter(ranges=ranges, Ns=args.steps,
                            method=args.method, verbose=args.verbose)
         print('%s, error=%.3e' % (fitmodel, fitmodel.error))
     

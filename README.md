@@ -123,3 +123,11 @@ The data can be plotted without fitting if the `ranges` option is not specified.
 A Nyquist plot is generated if the `--nyquist` option is specified.   Magnitude and phase is plotted is the `--magphase` option is specified.  The plot style can be altered using the `--style` option to specify a Matplotlib style file.
 
 Other command line options for zfitpy can be found with the --help option.
+
+Here's another example that loads the network and ranges from files.
+It uses a Matplotlib style file and annotates the title with the
+model, the optimization method, and the rms error.
+
+``` bash
+   $ zfitpy --net RL2.net --ranges=RL2.ranges --input data/data.csv --plot-error --method='brute' --title='%model, %method, %rmse' --style=z.mplstyle --output RL2-brute.pdf
+```
