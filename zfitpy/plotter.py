@@ -7,6 +7,19 @@ from numpy import degrees, angle
 
 class Plotter(object):
 
+    def set_title(self, axes, title, model):
+        
+        if title is None:
+            title = str(model)
+        if r'%rmse' in title:
+            title = title.replace(r'%rmse', '%e' % model._rmse)
+        if r'%method' in title:
+            title = title.replace(r'%method', str(model._method))
+        if r'%model' in title:
+            title = title.replace(r'%model', str(model))
+            
+        axes.set_title(title)
+
     def Z_error(self, data, model, axes=None, title=None):
 
         Z = model.Z(data.f)
@@ -21,9 +34,7 @@ class Plotter(object):
         axes.set_ylabel('Impedance error (ohms)')
         axes.grid(True)
 
-        if title is None:
-            title = str(model)
-        axes.set_title(title)
+        self.set_title(axes, title, model)
         axes.legend()
 
     def Z_fit(self, data, model=None, axes=None, title=None, magphase=False):
@@ -59,9 +70,7 @@ class Plotter(object):
         axes.set_ylabel('Impedance (ohms)')
         axes.grid(True)
 
-        if title is None:
-            title = str(model)
-        axes.set_title(title)
+        self.set_title(axes, title, model)
         axes.legend()
 
     def Z_nyquist(self, data, model=None, axes=None, title=None):
@@ -82,9 +91,7 @@ class Plotter(object):
         axes.set_ylabel('Impedance imag (ohms)')        
         axes.grid(True)
 
-        if title is None:
-            title = str(model)
-        axes.set_title(title)
+        self.set_title(axes, title, model)                
         axes.legend()                
 
     def Z(self, data, axes=None, title=None):
@@ -99,8 +106,6 @@ class Plotter(object):
         axes.set_ylabel('Impedance (ohms)')
         axes.grid(True)
 
-        if title is None:
-            title = data.name
-        axes.set_title(title)
+        self.set_title(axes, title, model)
         axes.legend()        
         

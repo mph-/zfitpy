@@ -38,5 +38,6 @@ class ZFitter(object):
         model, rmse, cov = fitter.optimize(ranges, opt, method=method, **kwargs)
         model._rmse = rmse
         model._cov = cov
+        model._method = method
 
         return model

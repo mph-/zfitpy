@@ -42,6 +42,7 @@ class Model(object):
     _Zcode = None
     _rmse = 0
     _cov = None
+    _method = ''
 
     def __init__(self, *args):
         """Create model instance."""
