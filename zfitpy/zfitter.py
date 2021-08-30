@@ -12,15 +12,29 @@ class ZFitter(object):
         self.f = f
         self.Z = Z
 
-    def __call__(self, ranges=None, opt='Z', method='brute', **kwargs):
+    def __call__(self, ranges=None, opt=None, method='brute', **kwargs):
 
+        parts = method.split('-')
+        if len(parts) > 2:
+            raise ValueError('Unknown method %s' % method)
+        if len(parts) == 2:
+            if parts[1] not in ('Y', 'Z'):
+                raise ValueError('Unknown method objective %s' % parts[1])
+            if opt is not None:
+                raise ValueError('Cannot specify method objective and opt')
+            opt = parts[1]
+        else:
+            if opt is None:
+                opt = 'Z'
+        method = parts[0]
+            
         if method == 'brute':
             fitter = ZFitterBrute(self._model, self.f, self.Z)
         elif method in ('trf', 'dogbox'):
             fitter = ZFitterCurve(self._model, self.f, self.Z)
         else:
             raise ValueError('Unknown method %s: needs to be brute, trf, dogbox' % method)
-    
+        
         model, rmse, cov = fitter.optimize(ranges, opt, method=method, **kwargs)
         model._rmse = rmse
         model._cov = cov

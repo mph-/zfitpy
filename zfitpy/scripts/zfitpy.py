@@ -62,8 +62,10 @@ def main():
     parser.add_argument('--plot-data', action='store_true', default=False, help='plot impedance data')    
     parser.add_argument('--magphase', action='store_true', default=False, help='plot magnitude and phase of impedance')            
     parser.add_argument('--title', type=str, help='title for plot')
+    parser.add_argument('--method', type=str, help='optimization method: brute, trf, or dogbox', default='brute')    
     parser.add_argument('--steps', type=int, default=20,
                         help='the number of search steps per range')
+    parser.add_argument('--verbose', type=int, default=0, help='set verbosity 0-2')
     parser.add_argument('--pdb', action='store_true',
                         default=False,
                         help="enter python debugger on exception")    
@@ -76,7 +78,7 @@ def main():
     
     if args.style:
         style.use(args.style)
-    
+
     if args.draw:
         Model = model_make(args)
         model = Model()
@@ -100,7 +102,8 @@ def main():
 
         Model = model_make(args)
         zfitter = ZFitter(Model, data.f, data.Z)            
-        fitmodel = zfitter(ranges=args.ranges, Ns=args.steps)
+        fitmodel = zfitter(ranges=args.ranges, Ns=args.steps,
+                           method=args.method, verbose=args.verbose)
         print('%s, error=%.3e' % (fitmodel, fitmodel.error))
     
     plotter = Plotter()
