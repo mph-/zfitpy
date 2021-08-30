@@ -2,7 +2,7 @@
 """zfitpy V0.2
 Copyright (c) 2021 Michael P. Hayes, UC ECE, NZ
 
-Usage: zfitpy modelname input-filename output-filename
+Usage: zfitpy modelname input-filename --output output-filename
 """
 
 from __future__ import print_function
