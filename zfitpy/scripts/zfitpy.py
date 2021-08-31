@@ -2,7 +2,13 @@
 """zfitpy V0.2
 Copyright (c) 2021 Michael P. Hayes, UC ECE, NZ
 
-Usage: zfitpy modelname input-filename --output output-filename
+Usage: 
+
+Here are some examples.
+
+zfitpy --net net --draw
+zfitpy --input data.csv --plot --output plotfilename
+zfitpy --plot-fit --net net --ranges ranges --input data.csv --plot-error
 """
 
 from __future__ import print_function
