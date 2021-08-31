@@ -23,6 +23,7 @@ class ZFitterCurve(ZFitterBase):
         """Ranges is a list of tuples, of the form: (min, max)."""
 
         kwargs.pop('Ns', None)
+        kwargs.pop('finish', None)        
         
         if opt == 'Z':
             func = self.Z_params

@@ -26,12 +26,17 @@ class ZFitterBrute(ZFitterBase):
             print(model, rmse)        
         return rmse
 
-    def optimize(self, ranges=None, opt='Z', Ns=10, finish=fmin, **kwargs):
+    def optimize(self, ranges=None, opt='Z', Ns=10, finish='fmin', **kwargs):
         """Ranges is a list of tuples, of the form: (min, max) or (min, max,
         numsteps).  If `numsteps` is not specified then `Ns` is used."""
 
         kwargs.pop('method', None)
         self.verbose = kwargs.pop('verbose', 0)
+
+        if finish in ('none', 'None', ''):
+            finish = None
+        elif finish == 'fmin':
+            finish = fmin
         
         if opt == 'Z':
             func = self.Zerror_params

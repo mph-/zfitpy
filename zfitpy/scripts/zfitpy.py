@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""zfitpy V0.3
+"""zfitpy V0.3.2
 Copyright (c) 2021 Michael P. Hayes, UC ECE, NZ
 
 Usage: 
@@ -78,11 +78,12 @@ def main():
     parser.add_argument('--fmin', type=float, default=None,
                         help='Minimum frequency to use for fitting')
     parser.add_argument('--fmax', type=float, default=None,
-                        help='Maximum frequency to use for fitting')        
+                        help='Maximum frequency to use for fitting')
+    parser.add_argument('--finish', type=str, help='finishing search method: none or fmin')
     parser.add_argument('--verbose', type=int, default=0, help='set verbosity 0-2')
     parser.add_argument('--pdb', action='store_true',
                         default=False,
-                        help="enter python debugger on exception")    
+                        help='enter python debugger on exception')    
     parser.add_argument('--style', type=str, help='matplotlib style filename')
 
     args = parser.parse_args()
@@ -123,7 +124,8 @@ def main():
         Model = model_make(args)
         zfitter = ZFitter(Model, data.f, data.Z)            
         fitmodel = zfitter(ranges=ranges, Ns=args.steps,
-                           method=args.method, verbose=args.verbose)
+                           method=args.method, verbose=args.verbose,
+                           finish=args.finish)
         print('%s, error=%.3e' % (fitmodel, fitmodel.error))
     
     plotter = Plotter()
