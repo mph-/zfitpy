@@ -12,7 +12,8 @@ class ZFitter(object):
         self.f = f
         self.Z = Z
 
-    def __call__(self, ranges=None, opt=None, method='brute', **kwargs):
+    def __call__(self, ranges=None, opt=None, method='brute', fmin=None, fmax=None,
+                 **kwargs):
 
         parts = method.split('-')
         if len(parts) > 2:
@@ -27,11 +28,22 @@ class ZFitter(object):
             if opt is None:
                 opt = 'Z'
         method = parts[0]
-            
+
+        f = self.f
+        Z = self.Z
+        if fmin is not None:
+            m = f >= fmin
+            f = f[m]
+            Z = Z[m]
+        if fmax is not None:
+            m = f <= fmax
+            f = f[m]
+            Z = Z[m]            
+        
         if method == 'brute':
-            fitter = ZFitterBrute(self._model, self.f, self.Z)
+            fitter = ZFitterBrute(self._model, f, Z)
         elif method in ('trf', 'dogbox'):
-            fitter = ZFitterCurve(self._model, self.f, self.Z)
+            fitter = ZFitterCurve(self._model, f, Z)
         else:
             raise ValueError('Unknown method %s: needs to be brute, trf, dogbox' % method)
         

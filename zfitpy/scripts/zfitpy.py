@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""zfitpy V0.2
+"""zfitpy V0.3
 Copyright (c) 2021 Michael P. Hayes, UC ECE, NZ
 
 Usage: 
@@ -75,6 +75,10 @@ def main():
     parser.add_argument('--method', type=str, help='optimization method: brute, trf, or dogbox', default='brute')    
     parser.add_argument('--steps', type=int, default=20,
                         help='the number of search steps per range')
+    parser.add_argument('--fmin', type=float, default=None,
+                        help='Minimum frequency to use for fitting')
+    parser.add_argument('--fmax', type=float, default=None,
+                        help='Maximum frequency to use for fitting')        
     parser.add_argument('--verbose', type=int, default=0, help='set verbosity 0-2')
     parser.add_argument('--pdb', action='store_true',
                         default=False,
@@ -101,7 +105,9 @@ def main():
     if args.input_filename is None:
         raise ValueError('Impedance data not specified')
     
-    data = impedancedata(args.input_filename)
+    data = impedancedata(args.input_filename,
+                         fmin=args.fmin, fmax=args.fmax)
+
 
     if False and args.ranges is None:
         raise ValueError('Search ranges not specified')

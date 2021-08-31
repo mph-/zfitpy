@@ -13,7 +13,7 @@ class Plotter(object):
             title = str(model)
         if model is not None:
             if r'%rmse' in title:
-                title = title.replace(r'%rmse', '%.3e' % model._rmse)
+                title = title.replace(r'%rmse', '%.2e' % model._rmse)
             if r'%method' in title:
                 title = title.replace(r'%method', str(model._method))
             if r'%model' in title:
