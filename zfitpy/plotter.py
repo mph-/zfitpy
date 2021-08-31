@@ -7,16 +7,17 @@ from numpy import degrees, angle
 
 class Plotter(object):
 
-    def set_title(self, axes, title, model):
+    def set_title(self, axes, title, model=None):
         
         if title is None:
             title = str(model)
-        if r'%rmse' in title:
-            title = title.replace(r'%rmse', '%.3e' % model._rmse)
-        if r'%method' in title:
-            title = title.replace(r'%method', str(model._method))
-        if r'%model' in title:
-            title = title.replace(r'%model', str(model))
+        if model is not None:
+            if r'%rmse' in title:
+                title = title.replace(r'%rmse', '%.3e' % model._rmse)
+            if r'%method' in title:
+                title = title.replace(r'%method', str(model._method))
+            if r'%model' in title:
+                title = title.replace(r'%model', str(model))
             
         axes.set_title(title)
 
@@ -106,6 +107,6 @@ class Plotter(object):
         axes.set_ylabel('Impedance (ohms)')
         axes.grid(True)
 
-        self.set_title(axes, title, model)
+        self.set_title(axes, title, model=None)
         axes.legend()        
         
