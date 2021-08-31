@@ -21,10 +21,14 @@ def modelmake(name, net, paramnames=None):
         net = eval(net)
     
     if paramnames is None:
-        Z = eval('(%s).Z(f)' % net)
-        paramnames = Z.symbols
-        paramnames.pop('t', None)
-        paramnames.pop('f', None)
+        try:
+            # For Lcapy 0.99
+            paramnames = net.params
+        except:
+            Z = eval('(%s).Z(f)' % net)
+            paramnames = Z.symbols
+            paramnames.pop('t', None)
+            paramnames.pop('f', None)
     
     params = ', '.join(paramnames)
     
