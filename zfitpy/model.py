@@ -75,10 +75,10 @@ class Model(object):
 
         return self._net.subs(vars(self)).Y.response(v, t)        
 
-    def draw(self, filename=None):
+    def draw(self, filename=None, layout='horizontal'):
         """Draw the network."""
 
-        self._net.draw(filename)
+        self._net.draw(filename, layout=layout)
 
     def _build(self, foo, name):
         paramnames = foo.symbols

@@ -65,6 +65,7 @@ def main():
     parser.add_argument('--output_filename', type=str, help='output filename')
     parser.add_argument('--ranges', type=str, help="specify search ranges, e.g.,  {'R1':(0,1),'L1':(10,20)}")
     parser.add_argument('--draw', action='store_true', default=False, help='draw network')
+    parser.add_argument('--layout', type=str, default='horizontal', help='drawing layout: vertical, horizontal, ladder')    
     parser.add_argument('--show', action='store_true', default=False, help='show plot')
     parser.add_argument('--nyquist', action='store_true', default=False, help='use Nyquist plot')    
     parser.add_argument('--plot-error', action='store_true', default=False, help='plot impedance error')
@@ -97,7 +98,7 @@ def main():
     if args.draw:
         Model = model_make(args)
         model = Model()
-        model.draw(args.output_filename)
+        model.draw(args.output_filename, layout=args.layout)
 
         if args.show or args.output_filename is None:
             show()        
