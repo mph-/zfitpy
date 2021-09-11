@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""zfitpy V0.3.2
+"""zfitpy V0.3.3
 Copyright (c) 2021 Michael P. Hayes, UC ECE, NZ
 
 Usage: 
@@ -82,9 +82,10 @@ def main():
                         help='Maximum frequency to use for fitting')
     parser.add_argument('--finish', type=str, help='finishing search method: none or fmin')
     parser.add_argument('--verbose', type=int, default=0, help='set verbosity 0-2')
-    parser.add_argument('--pdb', action='store_true',
-                        default=False,
-                        help='enter python debugger on exception')    
+    parser.add_argument('--pdb', action='store_true', default=False,
+                        help='enter python debugger on exception')
+    parser.add_argument('--defs', action='store_true', default=False,
+                        help='print component definitions as a dictionary')        
     parser.add_argument('--style', type=str, help='matplotlib style filename')
 
     args = parser.parse_args()
@@ -128,7 +129,9 @@ def main():
                            method=args.method, verbose=args.verbose,
                            finish=args.finish)
         print('%s, error=%.3e' % (fitmodel, fitmodel.error))
-    
+        if args.defs:
+           print(fitmodel.defs())
+
     plotter = Plotter()
     if args.plot_error and fitmodel:
         plotter.Z_error(data, fitmodel, title=args.title)

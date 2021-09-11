@@ -78,7 +78,13 @@ class Model(object):
     def draw(self, filename=None, layout='horizontal'):
         """Draw the network."""
 
-        self._net.draw(filename, layout=layout)
+        if filename.endswith('.sch'):
+            outfile = open(filename, 'w')
+            sch = self._net.sch(layout=layout)
+            outfile.write(str(sch))
+            outfile.close()
+        else:
+            self._net.draw(filename, layout=layout)
 
     def _build(self, foo, name):
         paramnames = foo.symbols
@@ -141,6 +147,16 @@ class Model(object):
             parts.append('%s=%.2e%s' % (var, val, units))
 
         return ', '.join(parts)
+
+    def defs(self):
+
+        defs = {}
+        for var, val in vars(self).items():
+            if var[0] == '_':
+                continue
+            defs[var] = val
+
+        return defs
 
     @property
     def net(self):
