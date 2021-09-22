@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 tests_require = ['nose', 'flake8', 'flake8-bugbear', 'flake8-comprehensions', 'flake8-requirements']
     
 setup(name='zfitpy',
-      version='0.4.0',
+      version='0.5.0',
       author='Michael Hayes',
       author_email='michael.hayes@canterbury.ac.nz',
       description='Electrical model fitting to impedance data',      

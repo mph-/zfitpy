@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""zfitpy V0.3.4
+"""zfitpy V0.3.5
 Copyright (c) 2021 Michael P. Hayes, UC ECE, NZ
 
 Usage: 
@@ -77,15 +77,19 @@ def main():
     parser.add_argument('--steps', type=int, default=20,
                         help='the number of search steps per range')
     parser.add_argument('--fmin', type=float, default=None,
-                        help='Minimum frequency to use for fitting')
+                        help='minimum frequency to use for fitting')
     parser.add_argument('--fmax', type=float, default=None,
-                        help='Maximum frequency to use for fitting')
+                        help='maximum frequency to use for fitting')
     parser.add_argument('--finish', type=str, help='finishing search method: none or fmin')
     parser.add_argument('--verbose', type=int, default=0, help='set verbosity 0-2')
     parser.add_argument('--pdb', action='store_true', default=False,
                         help='enter python debugger on exception')
     parser.add_argument('--defs', action='store_true', default=False,
-                        help='print component definitions as a dictionary')        
+                        help='print component definitions as a dictionary')
+    parser.add_argument('--error', action='store_true', default=False,
+                        help='print the fitting error')
+    parser.add_argument('--values', action='store_true', default=False,
+                        help='print the fitted values')        
     parser.add_argument('--style', type=str, help='matplotlib style filename')
 
     args = parser.parse_args()
@@ -128,9 +132,14 @@ def main():
         fitmodel = zfitter(ranges=ranges, Ns=args.steps,
                            method=args.method, verbose=args.verbose,
                            finish=args.finish)
-        print('%s, error=%.3e' % (fitmodel, fitmodel.error))
+        if args.error:
+            print('error=%.3e' % fitmodel.error)
         if args.defs:
-           print(fitmodel.defs())
+            print(fitmodel.defs())
+        if args.values:
+            print(fitmodel)
+        if not (args.error or args.defs or args.values):
+            print('%s, error=%.3e' % (fitmodel, fitmodel.error))
 
     plotter = Plotter()
     if args.plot_error and fitmodel:
