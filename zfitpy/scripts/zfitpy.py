@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""zfitpy V0.3.3
+"""zfitpy V0.3.4
 Copyright (c) 2021 Michael P. Hayes, UC ECE, NZ
 
 Usage: 

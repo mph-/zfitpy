@@ -12,6 +12,7 @@ Copyright 2021 Michael Hayes, UCECE
 
 from lcapy import f, t, G, R, C, L, CPE, Par, Ser
 import numpy as np
+from .engformatter import EngFormatter
 
 models = {}
 
@@ -139,12 +140,11 @@ class Model(object):
                 continue
 
             try:
-                units = {'R': ' ohms', 'C': ' F', 'L': ' H', 'K':'', 'a':''}[var[0]]
+                units = {'R': 'ohm', 'C': 'F', 'L': 'H', 'K':'', 'a':''}[var[0]]
             except KeyError:
                 units = ''
 
-            # Could convert units to have SI prefixes
-            parts.append('%s=%.2e%s' % (var, val, units))
+            parts.append('%s=%s' % (var, EngFormatter(hundreds=True).str(val, units)))
 
         return ', '.join(parts)
 

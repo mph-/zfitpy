@@ -38,6 +38,7 @@ The error between the measured data and best-fit model can be plotted using:
 
 ``` python
 from zfitpy import Plotter
+plotter = Plotter()
 plotter.Z_error(data, fitmodel)
 ```
 
