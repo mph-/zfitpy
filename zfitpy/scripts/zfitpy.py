@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""zfitpy V0.3.5
+"""zfitpy V0.3.6
 Copyright (c) 2021 Michael P. Hayes, UC ECE, NZ
 
 Usage: 
@@ -9,6 +9,7 @@ Here are some examples.
 zfitpy --net net --draw
 zfitpy --input data.csv --plot --output plotfilename
 zfitpy --plot-fit --net net --ranges ranges --input data.csv --plot-error
+zfitpy --net net --laplace
 """
 
 from __future__ import print_function
@@ -82,6 +83,8 @@ def main():
                         help='maximum frequency to use for fitting')
     parser.add_argument('--finish', type=str, help='finishing search method: none or fmin')
     parser.add_argument('--verbose', type=int, default=0, help='set verbosity 0-2')
+    parser.add_argument('--conjugate', action='store_true',
+                        help='conjugate the impedance')    
     parser.add_argument('--pdb', action='store_true', default=False,
                         help='enter python debugger on exception')
     parser.add_argument('--defs', action='store_true', default=False,
@@ -91,6 +94,8 @@ def main():
     parser.add_argument('--values', action='store_true', default=False,
                         help='print the fitted values')        
     parser.add_argument('--style', type=str, help='matplotlib style filename')
+    parser.add_argument('--laplace', action='store_true', default=False,
+                        help='print impedance in Laplace domain')    
 
     args = parser.parse_args()
 
@@ -100,6 +105,12 @@ def main():
     if args.style:
         style.use(args.style)
 
+    if args.laplace:
+        Model = model_make(args)
+        model = Model()
+        print(model.net.Z.laplace())
+        return 0
+     
     if args.draw:
         Model = model_make(args)
         model = Model()
@@ -113,8 +124,8 @@ def main():
         raise ValueError('Impedance data not specified')
     
     data = impedancedata(args.input_filename,
-                         fmin=args.fmin, fmax=args.fmax)
-
+                         fmin=args.fmin, fmax=args.fmax,
+                         conjugate=args.conjugate)
 
     if False and args.ranges is None:
         raise ValueError('Search ranges not specified')

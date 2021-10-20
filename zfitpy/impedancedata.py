@@ -8,7 +8,7 @@ from os.path import basename, splitext
 
 class ImpedanceData(object):
 
-    def __init__(self, filename, f, Z, fmin=None, fmax=None):
+    def __init__(self, filename, f, Z, fmin=None, fmax=None, conjugate=False):
     
         if fmin is not None:
             m = f >= fmin
@@ -19,6 +19,9 @@ class ImpedanceData(object):
             f = f[m]
             Z = Z[m]            
 
+        if conjugate:
+            Z = Z.conjugate()
+            
         self.f = f
         self.Z = Z
         self.filename = basename(filename)
@@ -31,7 +34,7 @@ class ImpedanceData(object):
 
 class KeysightE4990AImpedanceData(ImpedanceData):
 
-    def __init__(self, filename, fmin=None, fmax=None):
+    def __init__(self, filename, fmin, fmax, conjugate):
 
         lines = open(filename).readlines()
         if not lines[0].startswith('!Agilent Technologies,E4990A'):
@@ -40,7 +43,9 @@ class KeysightE4990AImpedanceData(ImpedanceData):
         if lines[4].startswith('Frequency(Hz), |Z|(Ohm)-data, theta-z(deg)-data'):
             foo = np.loadtxt(filename, skiprows=5, delimiter=',', comments='END')
             f = foo[:, 0]
-            Z = (np.cos(np.radians(foo[:, 2])) + 1j * np.sin(np.radians(foo[:, 2]))) * foo[:, 1]
+            A = foo[:, 1]
+            theta = np.radians(foo[:, 2])
+            Z = (np.cos(theta) + 1j * np.sin(theta)) * A
 
         elif lines[4].startswith('Frequency(Hz), R(Ohm)-data, X(Ohm)-data'):
         
@@ -50,12 +55,14 @@ class KeysightE4990AImpedanceData(ImpedanceData):
         else:
             raise ValueError('Unhandled format for Keysight E4990A')
 
-        super(KeysightE4990AImpedanceData, self).__init__(filename, f, Z, fmin, fmax)
+        super(KeysightE4990AImpedanceData, self).__init__(filename, f,
+                                                          Z, fmin, fmax,
+                                                          conjugate)
 
 
 class GenericImpedanceData(ImpedanceData):
 
-    def __init__(self, filename, fmin=None, fmax=None):
+    def __init__(self, filename, , fmin, fmax, conjugate):
 
         foo = np.loadtxt(filename, skiprows=0, delimiter=',', comments='#')
         if foo.shape[1] != 3:
@@ -64,18 +71,19 @@ class GenericImpedanceData(ImpedanceData):
         f = foo[:, 0]
         Z = foo[:, 1] + 1j * foo[:, 2]
 
-        super(GenericImpedanceData, self).__init__(filename, f, Z, fmin, fmax)
+        super(GenericImpedanceData, self).__init__(filename, f, Z,
+                                                   fmin, fmax, conjugate)
 
         
-def impedancedata(filename, fmin=None, fmax=None):
+def impedancedata(filename, fmin=None, fmax=None, conjugate=False):
 
     try:
-        return KeysightE4990AImpedanceData(filename, fmin, fmax)
+        return KeysightE4990AImpedanceData(filename, fmin, fmax, conjugate)
     except:
         pass
 
     try:
-        return GenericImpedanceData(filename, fmin, fmax)
+        return GenericImpedanceData(filename, fmin, fmax, conjugate)
     except:
         pass    
 
