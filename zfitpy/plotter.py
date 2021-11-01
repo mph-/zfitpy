@@ -7,10 +7,13 @@ from numpy import degrees, angle
 
 class Plotter(object):
 
-    def set_title(self, axes, title, model=None):
+    def set_title(self, axes, title=None, model=None):
         
         if title is None:
+            if model is None:
+                return axes
             title = str(model)
+                
         if model is not None:
             if r'%rmse' in title:
                 title = title.replace(r'%rmse', '%.2e' % model._rmse)
