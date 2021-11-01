@@ -20,6 +20,7 @@ class Plotter(object):
                 title = title.replace(r'%model', str(model))
             
         axes.set_title(title)
+        return axes        
 
     def Z_error(self, data, model, axes=None, title=None):
 
@@ -37,6 +38,7 @@ class Plotter(object):
 
         self.set_title(axes, title, model)
         axes.legend()
+        return axes
 
     def Z_fit(self, data, model=None, axes=None, title=None, magphase=False):
 
@@ -73,6 +75,7 @@ class Plotter(object):
 
         self.set_title(axes, title, model)
         axes.legend()
+        return axes        
 
     def Z_nyquist(self, data, model=None, axes=None, title=None):
 
@@ -93,7 +96,8 @@ class Plotter(object):
         axes.grid(True)
 
         self.set_title(axes, title, model)                
-        axes.legend()                
+        axes.legend()
+        return axes        
 
     def Z(self, data, axes=None, title=None):
         
@@ -109,4 +113,29 @@ class Plotter(object):
 
         self.set_title(axes, title, model=None)
         axes.legend()        
+        return axes
+
+    def Z_difference(self, data1, data2, axes=None, title=None):
+
+        if axes is None:
+            fig, axes = subplots(1)
+
+        if not (data1.f == data2.f).all():
+            raise ValueError('Mismatched frequencies')
+
+        Z1 = data1.Z
+        Z2 = data2.Z
+        Zdiff = Z1 - Z2
+
+        name = '(%s - %s)' % (data1.name, data2.name)
         
+        axes.plot(data1.f, Zdiff.real, label=name + ' real')
+        axes.plot(data1.f, Zdiff.imag, '--', label=name + ' imag')
+
+        axes.set_xlabel('Frequency (Hz)')
+        axes.set_ylabel('Impedance error (ohms)')
+        axes.grid(True)
+
+        self.set_title(axes, title, model=None)
+        axes.legend()
+        return axes    

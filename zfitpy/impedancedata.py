@@ -62,7 +62,7 @@ class KeysightE4990AImpedanceData(ImpedanceData):
 
 class GenericImpedanceData(ImpedanceData):
 
-    def __init__(self, filename, , fmin, fmax, conjugate):
+    def __init__(self, filename, fmin, fmax, conjugate):
 
         foo = np.loadtxt(filename, skiprows=0, delimiter=',', comments='#')
         if foo.shape[1] != 3:
