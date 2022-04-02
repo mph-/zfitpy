@@ -5,15 +5,16 @@ Copyright 2021 Michael Hayes, UCECE
 """
 from math import floor, log10
 
+
 class EngFormatter(object):
 
     def __init__(self, trim=True, hundreds=False, sfmax=3):
         """If `hundreds` True format like 100 pF rather than 0.1 nF"""
-        
+
         self.trim = trim
         self.hundreds = hundreds
         self.sfmax = sfmax
-        
+
     def _do(self, value, unit, prefixes, space='', mbox_prefix='',
             mbox_suffix=''):
 
@@ -59,7 +60,7 @@ class EngFormatter(object):
         """Make latex math-mode string."""
 
         return '$' + self.latex(value, unit) + '$'
-        
+
     def latex(self, value, unit):
         """Make latex string."""
 
@@ -73,4 +74,3 @@ class EngFormatter(object):
         return self._do(value, unit,
                         ('f', 'p', 'n', 'u', 'm', '', 'k', 'M', 'G', 'T'),
                         ' ', '', '')
-    

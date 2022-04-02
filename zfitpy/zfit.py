@@ -6,6 +6,7 @@ from .impedancedata import ImpedanceData, impedancedata
 from .model import modelmake, Model
 from .zfitter import ZFitter
 
+
 def zfit(data, model, ranges, method='brute', opt='Z', **kwargs):
     """Fit impedance data to a model.
 
@@ -25,7 +26,7 @@ def zfit(data, model, ranges, method='brute', opt='Z', **kwargs):
         model = modelmake('Model', model)
 
     zfitter = ZFitter(model, data.f, data.Z)
-        
+
     fitmodel = zfitter(ranges=ranges, method=method, opt=opt, **kwargs)
 
     return data, fitmodel

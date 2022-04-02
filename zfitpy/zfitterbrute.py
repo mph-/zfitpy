@@ -8,22 +8,22 @@ from .zfitterbase import ZFitterBase
 
 class ZFitterBrute(ZFitterBase):
     """Class for non-linear least-squares using the brute force
-    SciPy algorithm."""    
+    SciPy algorithm."""
 
     def Zerror_params(self, params):
 
         model = self._model(*params)
         rmse = model.Zrmse(self.f, self.Z)
-        if self.verbose > 1:        
-            print(model, rmse)        
+        if self.verbose > 1:
+            print(model, rmse)
         return rmse
 
     def Yerror_params(self, params):
 
         model = self._model(*params)
         rmse = model.Yrmse(self.f, self.Y)
-        if self.verbose > 1:        
-            print(model, rmse)        
+        if self.verbose > 1:
+            print(model, rmse)
         return rmse
 
     def optimize(self, ranges=None, opt='Z', Ns=10, finish='fmin', **kwargs):
@@ -37,7 +37,7 @@ class ZFitterBrute(ZFitterBase):
             finish = None
         elif finish == 'fmin':
             finish = fmin
-        
+
         if opt == 'Z':
             func = self.Zerror_params
         elif opt == 'Y':
@@ -45,7 +45,7 @@ class ZFitterBrute(ZFitterBase):
         else:
             raise ValueError("Opt must be 'Y' or 'Z'")
 
-        ranges = self._make_ranges(ranges)        
+        ranges = self._make_ranges(ranges)
 
         oranges = []
         for r in ranges:
@@ -63,4 +63,3 @@ class ZFitterBrute(ZFitterBase):
 
         model = self._model(*params)
         return model, rmse, None
-    

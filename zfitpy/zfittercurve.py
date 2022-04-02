@@ -6,6 +6,7 @@ import numpy as np
 from scipy.optimize import curve_fit
 from .zfitterbase import ZFitterBase
 
+
 class ZFitterCurve(ZFitterBase):
     """Class for non-linear least-squares usin the trf and dogbox
     SciPy algorithms."""
@@ -16,26 +17,26 @@ class ZFitterCurve(ZFitterBase):
 
     def Y_params(self, f, *params):
         Y = self._model(*params).Y(f)
-        return np.hstack((Y.real, Y.imag))    
+        return np.hstack((Y.real, Y.imag))
 
     def optimize(self, ranges=None, opt='Z', ftol=1e-14, xtol=1e-14,
                  maxfev=1e5, **kwargs):
         """Ranges is a list of tuples, of the form: (min, max)."""
 
         kwargs.pop('Ns', None)
-        kwargs.pop('finish', None)        
-        
+        kwargs.pop('finish', None)
+
         if opt == 'Z':
             func = self.Z_params
             ydata = self.Z
         elif opt == 'Y':
             func = self.Y_params
-            ydata = self.Y            
+            ydata = self.Y
         else:
             raise ValueError("Opt must be 'Z' or 'Y'")
 
         ranges = self._make_ranges(ranges)
-        
+
         bounds_min = np.zeros(len(ranges))
         bounds_max = np.zeros(len(ranges))
 
@@ -61,4 +62,3 @@ class ZFitterCurve(ZFitterBase):
 
         rmse = model.Zrmse(self.f, self.Z)
         return model, rmse, cov
-    

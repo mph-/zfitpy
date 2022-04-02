@@ -16,11 +16,12 @@ from .engformatter import EngFormatter
 
 models = {}
 
+
 def modelmake(name, net, paramnames=None):
 
     if isinstance(net, str):
         net = eval(net)
-    
+
     if paramnames is None:
         try:
             # For Lcapy 0.99
@@ -30,9 +31,9 @@ def modelmake(name, net, paramnames=None):
             paramnames = Z.symbols
             paramnames.pop('t', None)
             paramnames.pop('f', None)
-    
+
     params = ', '.join(paramnames)
-    
+
     docstring = name + '(' + params + '): ' + str(net)
     newclass = type(name, (Model, ), {'__doc__': docstring})
     newclass._net = net
@@ -43,7 +44,7 @@ def modelmake(name, net, paramnames=None):
 
 class Model(object):
 
-    _Ycode = None    
+    _Ycode = None
     _Zcode = None
     _rmse = 0
     _cov = None
@@ -54,10 +55,10 @@ class Model(object):
 
         if len(args) == 0:
             return
-        
+
         for m, p in enumerate(self.paramnames):
             setattr(self, p, args[m])
-    
+
     def __repr__(self):
         return self.__str__()
 
@@ -69,12 +70,12 @@ class Model(object):
         """Calculate voltage drop across the network given a current signal."""
 
         return self._net.subs(vars(self)).Z.response(i, t)
-    
+
     def i(self, v, t):
         """Calculate current through the network given an applied voltage
-        signal."""        
+        signal."""
 
-        return self._net.subs(vars(self)).Y.response(v, t)        
+        return self._net.subs(vars(self)).Y.response(v, t)
 
     def draw(self, filename=None, layout='horizontal'):
         """Draw the network."""
@@ -90,7 +91,7 @@ class Model(object):
     def _build(self, foo, name):
         paramnames = foo.symbols
         paramnames.pop('t', None)
-        paramnames.pop('f', None)        
+        paramnames.pop('f', None)
 
         # FIXME if have R1 and R since the replacement will fail.
         codestr = str(foo)
@@ -100,13 +101,13 @@ class Model(object):
 
         return code
 
-    def _Ybuild(self):    
+    def _Ybuild(self):
 
         return self._build(self._net.Y(f), 'Y')
 
-    def _Zbuild(self):    
+    def _Zbuild(self):
 
-        return self._build(self._net.Z(f), 'Z')    
+        return self._build(self._net.Z(f), 'Z')
 
     def Z(self, f):
         """Return impedance at frequency `f`; `f` can be an ndarray."""
@@ -114,23 +115,23 @@ class Model(object):
         if self._Zcode is None:
             # Cache result for class
             self.__class__._Zcode = self._Zbuild()
-        
+
         j = 1j
         pi = np.pi
-        
+
         return eval(self._Zcode)
-    
+
     def Y(self, f):
         """Return admittance at frequency `f`; `f` can be an ndarray."""
 
         if self._Ycode is None:
             # Cache result for class
             self.__class__._Ycode = self._Ybuild()
-        
+
         j = 1j
         pi = np.pi
-        
-        return eval(self._Ycode)        
+
+        return eval(self._Ycode)
 
     def __str__(self):
 
@@ -140,11 +141,13 @@ class Model(object):
                 continue
 
             try:
-                units = {'R': 'ohm', 'C': 'F', 'L': 'H', 'K':'', 'a':''}[var[0]]
+                units = {'R': 'ohm', 'C': 'F',
+                         'L': 'H', 'K': '', 'a': ''}[var[0]]
             except KeyError:
                 units = ''
 
-            parts.append('%s=%s' % (var, EngFormatter(hundreds=True).str(val, units)))
+            parts.append('%s=%s' %
+                         (var, EngFormatter(hundreds=True).str(val, units)))
 
         return ', '.join(parts)
 
@@ -161,20 +164,19 @@ class Model(object):
     @property
     def net(self):
         return self._net.subs(vars(self))
-    
+
     def Yrmse(self, f, Y):
-        
+
         Yerr = Y - self.Y(f)
         rmse = np.sqrt(np.mean(Yerr.real**2 + Yerr.imag**2))
         return rmse
 
     def Zrmse(self, f, Z):
-        
+
         Zerr = Z - self.Z(f)
         rmse = np.sqrt(np.mean(Zerr.real**2 + Zerr.imag**2))
-        return rmse                
+        return rmse
 
     @property
     def error(self):
         return self._rmse
-    

@@ -2,6 +2,7 @@
 
 Copyright 2021 Michael Hayes, UCECE"""
 
+
 class ZFitterBase(object):
 
     def __init__(self, model, f, Z):
@@ -17,8 +18,8 @@ class ZFitterBase(object):
     def _make_ranges(self, ranges):
 
         if isinstance(ranges, str):
-            ranges = eval(ranges)            
-        
+            ranges = eval(ranges)
+
         if isinstance(ranges, dict):
             rangesdict = ranges
             ranges = []
@@ -26,4 +27,3 @@ class ZFitterBase(object):
                 ranges.append(rangesdict[paramname])
 
         return ranges
-    

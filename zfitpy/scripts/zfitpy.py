@@ -2,7 +2,7 @@
 """zfitpy V0.3.6
 Copyright (c) 2021 Michael P. Hayes, UC ECE, NZ
 
-Usage: 
+Usage:
 
 Here are some examples.
 
@@ -43,15 +43,15 @@ def model_make(args):
         net = args.net
         if net.endswith('.net'):
            net = open(net).read()
-       
+
         Model = modelmake('Model', net)
 
-    if args.modelname:        
+    if args.modelname:
         try:
             Model = models[args.modelname]
         except:
             modelnames = ', '.join(list(models.keys()))
-            raise ValueError('Unknown model %s: known models: %s' % (args.modelname, modelnames))            
+            raise ValueError('Unknown model %s: known models: %s' % (args.modelname, modelnames))
 
     return Model
 
@@ -62,19 +62,19 @@ def main():
     parser.add_argument('--modelname', type=str, help='model name')
     parser.add_argument('--net', type=str,
                         help="specify network, e.g., R('R1') + L('L1')")
-    parser.add_argument('--input_filename', type=str, help='input filename')    
+    parser.add_argument('--input_filename', type=str, help='input filename')
     parser.add_argument('--output_filename', type=str, help='output filename')
     parser.add_argument('--ranges', type=str, help="specify search ranges, e.g.,  {'R1':(0,1),'L1':(10,20)}")
     parser.add_argument('--draw', action='store_true', default=False, help='draw network')
-    parser.add_argument('--layout', type=str, default='horizontal', help='drawing layout: vertical, horizontal, ladder')    
+    parser.add_argument('--layout', type=str, default='horizontal', help='drawing layout: vertical, horizontal, ladder')
     parser.add_argument('--show', action='store_true', default=False, help='show plot')
-    parser.add_argument('--nyquist', action='store_true', default=False, help='use Nyquist plot')    
+    parser.add_argument('--nyquist', action='store_true', default=False, help='use Nyquist plot')
     parser.add_argument('--plot-error', action='store_true', default=False, help='plot impedance error')
     parser.add_argument('--plot-fit', action='store_true', default=False, help='plot impedance data and fit')
-    parser.add_argument('--plot-data', action='store_true', default=False, help='plot impedance data')    
-    parser.add_argument('--magphase', action='store_true', default=False, help='plot magnitude and phase of impedance')            
+    parser.add_argument('--plot-data', action='store_true', default=False, help='plot impedance data')
+    parser.add_argument('--magphase', action='store_true', default=False, help='plot magnitude and phase of impedance')
     parser.add_argument('--title', type=str, help='title for plot')
-    parser.add_argument('--method', type=str, help='optimization method: brute, trf, or dogbox', default='brute')    
+    parser.add_argument('--method', type=str, help='optimization method: brute, trf, or dogbox', default='brute')
     parser.add_argument('--steps', type=int, default=20,
                         help='the number of search steps per range')
     parser.add_argument('--fmin', type=float, default=None,
@@ -84,7 +84,7 @@ def main():
     parser.add_argument('--finish', type=str, help='finishing search method: none or fmin')
     parser.add_argument('--verbose', type=int, default=0, help='set verbosity 0-2')
     parser.add_argument('--conjugate', action='store_true',
-                        help='conjugate the impedance')    
+                        help='conjugate the impedance')
     parser.add_argument('--pdb', action='store_true', default=False,
                         help='enter python debugger on exception')
     parser.add_argument('--defs', action='store_true', default=False,
@@ -92,16 +92,16 @@ def main():
     parser.add_argument('--error', action='store_true', default=False,
                         help='print the fitting error')
     parser.add_argument('--values', action='store_true', default=False,
-                        help='print the fitted values')        
+                        help='print the fitted values')
     parser.add_argument('--style', type=str, help='matplotlib style filename')
     parser.add_argument('--laplace', action='store_true', default=False,
-                        help='print impedance in Laplace domain')    
+                        help='print impedance in Laplace domain')
 
     args = parser.parse_args()
 
     if args.pdb:
         sys.excepthook = zfitpy_exception
-    
+
     if args.style:
         style.use(args.style)
 
@@ -110,19 +110,19 @@ def main():
         model = Model()
         print(model.net.Z.laplace())
         return 0
-     
+
     if args.draw:
         Model = model_make(args)
         model = Model()
         model.draw(args.output_filename, layout=args.layout)
 
         if args.show or args.output_filename is None:
-            show()        
+            show()
         return 0
 
     if args.input_filename is None:
         raise ValueError('Impedance data not specified')
-    
+
     data = impedancedata(args.input_filename,
                          fmin=args.fmin, fmax=args.fmax,
                          conjugate=args.conjugate)
@@ -137,9 +137,9 @@ def main():
         ranges = args.ranges
         if ranges.endswith('.ranges'):
            ranges = open(ranges).read()
-       
+
         Model = model_make(args)
-        zfitter = ZFitter(Model, data.f, data.Z)            
+        zfitter = ZFitter(Model, data.f, data.Z)
         fitmodel = zfitter(ranges=ranges, Ns=args.steps,
                            method=args.method, verbose=args.verbose,
                            finish=args.finish)
@@ -171,9 +171,9 @@ def main():
     if args.output_filename is not None:
         savefig(args.output_filename, bbox_inches='tight')
 
-    if args.show or args.output_filename is None:        
+    if args.show or args.output_filename is None:
         show()
-    
+
     return 0
 
 
