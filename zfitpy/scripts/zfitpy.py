@@ -21,28 +21,32 @@ from zfitpy import Plotter
 from zfitpy import impedancedata
 import sys
 
+
 def zfitpy_exception(type, value, tb):
-   if hasattr(sys, 'ps1') or not sys.stderr.isatty():
-      # We are not in interactive mode or we don't have a tty-like
-      # device, so call the default hook
-      sys.__excepthook__(type, value, tb)
-   else:
-      import traceback, pdb
-      # We are in interactive mode, print the exception...
-      traceback.print_exception(type, value, tb)
-      print()
-      # ...then start the debugger in post-mortem mode.
-      pdb.pm()
+    if hasattr(sys, 'ps1') or not sys.stderr.isatty():
+        # We are not in interactive mode or we don't have a tty-like
+        # device, so call the default hook
+        sys.__excepthook__(type, value, tb)
+    else:
+        import traceback
+        import pdb
+        # We are in interactive mode, print the exception...
+        traceback.print_exception(type, value, tb)
+        print()
+        # ...then start the debugger in post-mortem mode.
+        pdb.pm()
+
 
 def model_make(args):
 
     if not args.net and not args.modelname:
-        raise ValueError('Either need to specify model name with --modelname or network with --net')
+        raise ValueError(
+            'Either need to specify model name with --modelname or network with --net')
 
     if args.net:
         net = args.net
         if net.endswith('.net'):
-           net = open(net).read()
+            net = open(net).read()
 
         Model = modelmake('Model', net)
 
@@ -51,38 +55,53 @@ def model_make(args):
             Model = models[args.modelname]
         except:
             modelnames = ', '.join(list(models.keys()))
-            raise ValueError('Unknown model %s: known models: %s' % (args.modelname, modelnames))
+            raise ValueError('Unknown model %s: known models: %s' %
+                             (args.modelname, modelnames))
 
     return Model
+
 
 def main():
 
     parser = ArgumentParser(description='Draw schematic of impedance model.')
-    parser.add_argument('--version', action='version', version=__doc__.split('\n')[0])
+    parser.add_argument('--version', action='version',
+                        version=__doc__.split('\n')[0])
     parser.add_argument('--modelname', type=str, help='model name')
     parser.add_argument('--net', type=str,
                         help="specify network, e.g., R('R1') + L('L1')")
     parser.add_argument('--input_filename', type=str, help='input filename')
     parser.add_argument('--output_filename', type=str, help='output filename')
-    parser.add_argument('--ranges', type=str, help="specify search ranges, e.g.,  {'R1':(0,1),'L1':(10,20)}")
-    parser.add_argument('--draw', action='store_true', default=False, help='draw network')
-    parser.add_argument('--layout', type=str, default='horizontal', help='drawing layout: vertical, horizontal, ladder')
-    parser.add_argument('--show', action='store_true', default=False, help='show plot')
-    parser.add_argument('--nyquist', action='store_true', default=False, help='use Nyquist plot')
-    parser.add_argument('--plot-error', action='store_true', default=False, help='plot impedance error')
-    parser.add_argument('--plot-fit', action='store_true', default=False, help='plot impedance data and fit')
-    parser.add_argument('--plot-data', action='store_true', default=False, help='plot impedance data')
-    parser.add_argument('--magphase', action='store_true', default=False, help='plot magnitude and phase of impedance')
+    parser.add_argument(
+        '--ranges', type=str, help="specify search ranges, e.g.,  {'R1':(0,1),'L1':(10,20)}")
+    parser.add_argument('--draw', action='store_true',
+                        default=False, help='draw network')
+    parser.add_argument('--layout', type=str, default='horizontal',
+                        help='drawing layout: vertical, horizontal, ladder')
+    parser.add_argument('--show', action='store_true',
+                        default=False, help='show plot')
+    parser.add_argument('--nyquist', action='store_true',
+                        default=False, help='use Nyquist plot')
+    parser.add_argument('--plot-error', action='store_true',
+                        default=False, help='plot impedance error')
+    parser.add_argument('--plot-fit', action='store_true',
+                        default=False, help='plot impedance data and fit')
+    parser.add_argument('--plot-data', action='store_true',
+                        default=False, help='plot impedance data')
+    parser.add_argument('--magphase', action='store_true',
+                        default=False, help='plot magnitude and phase of impedance')
     parser.add_argument('--title', type=str, help='title for plot')
-    parser.add_argument('--method', type=str, help='optimization method: brute, trf, or dogbox', default='brute')
+    parser.add_argument(
+        '--method', type=str, help='optimization method: brute, trf, or dogbox', default='brute')
     parser.add_argument('--steps', type=int, default=20,
                         help='the number of search steps per range')
     parser.add_argument('--fmin', type=float, default=None,
                         help='minimum frequency to use for fitting')
     parser.add_argument('--fmax', type=float, default=None,
                         help='maximum frequency to use for fitting')
-    parser.add_argument('--finish', type=str, help='finishing search method: none or fmin')
-    parser.add_argument('--verbose', type=int, default=0, help='set verbosity 0-2')
+    parser.add_argument('--finish', type=str,
+                        help='finishing search method: none or fmin')
+    parser.add_argument('--verbose', type=int, default=0,
+                        help='set verbosity 0-2')
     parser.add_argument('--conjugate', action='store_true',
                         help='conjugate the impedance')
     parser.add_argument('--pdb', action='store_true', default=False,
@@ -136,7 +155,7 @@ def main():
 
         ranges = args.ranges
         if ranges.endswith('.ranges'):
-           ranges = open(ranges).read()
+            ranges = open(ranges).read()
 
         Model = model_make(args)
         zfitter = ZFitter(Model, data.f, data.Z)
@@ -160,7 +179,8 @@ def main():
         if args.nyquist:
             plotter.Z_nyquist(data, fitmodel, title=args.title)
         else:
-            plotter.Z_fit(data, fitmodel, title=args.title, magphase=args.magphase)
+            plotter.Z_fit(data, fitmodel, title=args.title,
+                          magphase=args.magphase)
 
     if args.plot_data:
         if args.nyquist:
