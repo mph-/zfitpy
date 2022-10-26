@@ -1,6 +1,6 @@
 """This module parses impedance data.
 
-Copyright 2021 Michael Hayes, UCECE"""
+Copyright 2021--2022 Michael Hayes, UCECE"""
 
 import numpy as np
 from os.path import basename, splitext
@@ -25,7 +25,7 @@ class ImpedanceData(object):
         self.f = f
         self.Z = Z
         self.filename = basename(filename)
-        self.name, ext = splitext(basename(filename.lower()))
+        self.name, ext = splitext(self.filename)
 
     @property
     def Y(self):
