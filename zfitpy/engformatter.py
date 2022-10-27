@@ -48,13 +48,16 @@ class EngFormatter(object):
         n = idx - 5
         value = value * 10**(-3 * n)
 
-        string = fmt % value
+        valstr = fmt % value
 
         if self.trim:
             # Remove trailing zeroes after decimal point
-            string = string.rstrip('0').rstrip('.')
+            valstr = valstr.rstrip('0').rstrip('.')
 
-        return string + space + mbox_prefix + prefixes[idx] + unit + mbox_suffix
+        string = (valstr + space + mbox_prefix +
+                  prefixes[idx] + unit).strip() + mbox_suffix
+
+        return string
 
     def latex_math(self, value, unit):
         """Make latex math-mode string."""

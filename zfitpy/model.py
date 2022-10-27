@@ -135,6 +135,10 @@ class Model(object):
 
     def __str__(self):
 
+        return self.title(sfmax=3)
+
+    def title(self, sfmax=3):
+
         parts = []
         for var, val in vars(self).items():
             if var[0] == '_':
@@ -147,7 +151,7 @@ class Model(object):
                 units = ''
 
             parts.append('%s=%s' %
-                         (var, EngFormatter(hundreds=True).str(val, units)))
+                         (var, EngFormatter(hundreds=True, sfmax=sfmax).str(val, units)))
 
         return ', '.join(parts)
 

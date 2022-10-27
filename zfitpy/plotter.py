@@ -8,7 +8,7 @@ from numpy import degrees, angle
 
 class Plotter(object):
 
-    def set_title(self, axes, title=None, model=None):
+    def set_title(self, axes, title=None, model=None, sfmax=2):
 
         if title is None:
             if model is None:
@@ -21,7 +21,7 @@ class Plotter(object):
             if r'%method' in title:
                 title = title.replace(r'%method', str(model._method))
             if r'%model' in title:
-                title = title.replace(r'%model', str(model))
+                title = title.replace(r'%model', model.title(sfmax=sfmax))
 
         axes.set_title(title)
         return axes
