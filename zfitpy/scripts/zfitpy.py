@@ -115,6 +115,10 @@ def main():
     parser.add_argument('--style', type=str, help='matplotlib style filename')
     parser.add_argument('--laplace', action='store_true', default=False,
                         help='print impedance in Laplace domain')
+    parser.add_argument('--Ls', action='store_true', default=False,
+                        help='plot series inductance')
+    parser.add_argument('--Rs', action='store_true', default=False,
+                        help='plot series resistance')
 
     args = parser.parse_args()
 
@@ -178,6 +182,9 @@ def main():
     if args.plot_fit:
         if args.nyquist:
             plotter.Z_nyquist(data, fitmodel, title=args.title)
+        elif args.Ls or args.Rs:
+            plotter.LsRs_fit(data, fitmodel, title=args.title,
+                             doLs=args.Ls, doRs=args.Rs)
         else:
             plotter.Z_fit(data, fitmodel, title=args.title,
                           magphase=args.magphase)
@@ -185,6 +192,9 @@ def main():
     if args.plot_data:
         if args.nyquist:
             plotter.Z_nyquist(data, None, title=args.title)
+        elif args.Ls or args.Rs:
+            plotter.LsRs_fit(data, None, title=args.title,
+                             doLs=args.Ls, doRs=args.Rs)
         else:
             plotter.Z_fit(data, None, title=args.title, magphase=args.magphase)
 

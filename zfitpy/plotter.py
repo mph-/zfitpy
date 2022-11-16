@@ -3,7 +3,7 @@
 Copyright 2021 Michael Hayes, UCECE"""
 
 from matplotlib.pyplot import subplots
-from numpy import degrees, angle
+from numpy import degrees, angle, pi
 
 
 class Plotter(object):
@@ -147,4 +147,62 @@ class Plotter(object):
 
         self.set_title(axes, title, model=None)
         axes.legend()
+        return axes
+
+    def LsRs_fit(self, data, model=None, axes=None, title=None,
+                 doLs=True, doRs=True):
+
+        if model is not None:
+            Z = model.Z(data.f)
+        else:
+            Z = None
+
+        if axes is None:
+            fig, axes = subplots(1)
+
+        if doLs and doRs:
+            Lsaxes = axes
+            Rsaxes = axes.twinx()
+        elif doLs:
+            Lsaxes = axes
+            Rsaxes = None
+        else:
+            Rsaxes = axes
+            Lsaxes = None
+
+        if Rsaxes is not None:
+            Rs = data.Z.real
+            Rsaxes.plot(data.f, Rs, label=data.name + ' data Rs')
+            Rsaxes.set_ylabel('Resistance (ohm)')
+            if Lsaxes is not None:
+                # Dummy plot to advance colour.
+                Lsaxes.plot([], [])
+
+        if Z is not None:
+            if Rsaxes is not None:
+                Rs = Z.real
+                Rsaxes.plot(data.f, Rs, label=data.name + ' model Rs')
+            if Lsaxes is not None:
+                # Dummy plot to advance colour.
+                Lsaxes.plot([], [])
+
+        if Lsaxes is not None:
+            Ls = data.Z.imag / (2 * pi * data.f)
+            Lsaxes.plot(data.f, Ls * 1e3, label=data.name + ' data Ls')
+            Lsaxes.set_ylabel('Inductance (mH)')
+
+        if Z is not None:
+            if Lsaxes is not None:
+                Ls = Z.imag / (2 * pi * data.f)
+                Lsaxes.plot(data.f, Ls * 1e3, label=data.name + ' model Ls')
+
+        axes.set_xlabel('Frequency (Hz)')
+        axes.grid(True)
+
+        self.set_title(axes, title, model)
+
+        if Lsaxes is not None:
+            Lsaxes.legend()
+        if Rsaxes is not None:
+            Rsaxes.legend()
         return axes
