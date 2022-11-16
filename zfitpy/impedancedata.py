@@ -2,7 +2,7 @@
 
 Copyright 2021--2022 Michael Hayes, UCECE"""
 
-import numpy as np
+from numpy import loadtxt, pi, sin, cos, radians
 from os.path import basename, splitext
 
 
@@ -41,19 +41,28 @@ class KeysightE4990AImpedanceData(ImpedanceData):
             raise ValueError('Not Keysight E4990A')
 
         if lines[4].startswith('Frequency(Hz), |Z|(Ohm)-data, theta-z(deg)-data'):
-            foo = np.loadtxt(filename, skiprows=5,
-                             delimiter=',', comments='END')
+            foo = loadtxt(filename, skiprows=5,
+                          delimiter=',', comments='END')
             f = foo[:, 0]
             A = foo[:, 1]
-            theta = np.radians(foo[:, 2])
-            Z = (np.cos(theta) + 1j * np.sin(theta)) * A
+            theta = radians(foo[:, 2])
+            Z = (cos(theta) + 1j * sin(theta)) * A
 
         elif lines[4].startswith('Frequency(Hz), R(Ohm)-data, X(Ohm)-data'):
 
-            foo = np.loadtxt(filename, skiprows=5,
-                             delimiter=',', comments='END')
+            foo = loadtxt(filename, skiprows=5,
+                          delimiter=',', comments='END')
             f = foo[:, 0]
             Z = foo[:, 1] + 1j * foo[:, 2]
+
+        elif lines[4].startswith('Frequency(Hz), Ls(H)-data, Rs(Ohm)-data'):
+
+            foo = loadtxt(filename, skiprows=5,
+                          delimiter=',', comments='END')
+            f = foo[:, 0]
+            Ls = foo[:, 1]
+            Rs = foo[:, 2]
+            Z = Rs + 1j * 2 * pi * f * Ls
         else:
             raise ValueError('Unhandled format for Keysight E4990A')
 
@@ -66,7 +75,7 @@ class GenericImpedanceData(ImpedanceData):
 
     def __init__(self, filename, fmin, fmax, conjugate):
 
-        foo = np.loadtxt(filename, skiprows=0, delimiter=',', comments='#')
+        foo = loadtxt(filename, skiprows=0, delimiter=',', comments='#')
         if foo.shape[1] != 3:
             raise ValueError('Expecting 3 columns (frequency, real, imag')
 
