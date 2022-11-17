@@ -162,7 +162,12 @@ class Plotter(object):
 
         if doLs and doRs:
             Lsaxes = axes
-            Rsaxes = axes.twinx()
+
+            # Handle multiple calls with specified axes
+            if not hasattr(axes, '_twinx'):
+                axes._twinx = axes.twinx()
+
+            Rsaxes = axes._twinx
         elif doLs:
             Lsaxes = axes
             Rsaxes = None
@@ -172,19 +177,21 @@ class Plotter(object):
 
         if Rsaxes is not None:
             Rs = data.Z.real
-            Rsaxes.plot(data.f, Rs, label=data.name + ' data Rs')
+            Rsaxes.plot(data.f, Rs, '--', label=data.name + ' data Rs')
             Rsaxes.set_ylabel('Resistance (ohm)')
             if Lsaxes is not None:
                 # Dummy plot to advance colour.
-                Lsaxes.plot([], [])
+                # Lsaxes.plot([], [])
+                pass
 
         if Z is not None:
             if Rsaxes is not None:
                 Rs = Z.real
-                Rsaxes.plot(data.f, Rs, label=data.name + ' model Rs')
+                Rsaxes.plot(data.f, Rs, '--', label=data.name + ' model Rs')
             if Lsaxes is not None:
                 # Dummy plot to advance colour.
-                Lsaxes.plot([], [])
+                # Lsaxes.plot([], [])
+                pass
 
         if Lsaxes is not None:
             Ls = data.Z.imag / (2 * pi * data.f)
