@@ -119,6 +119,8 @@ def main():
                         help='plot series inductance')
     parser.add_argument('--Rs', action='store_true', default=False,
                         help='plot series resistance')
+    parser.add_argument('--Zoffset', type=float, default=0,
+                        help='impedance offset to add')
 
     args = parser.parse_args()
 
@@ -149,6 +151,8 @@ def main():
     data = impedancedata(args.input_filename,
                          fmin=args.fmin, fmax=args.fmax,
                          conjugate=args.conjugate)
+    if args.Zoffset != 0:
+        data.Z += args.Zoffset
 
     if False and args.ranges is None:
         raise ValueError('Search ranges not specified')
