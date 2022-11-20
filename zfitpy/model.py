@@ -11,10 +11,20 @@ Copyright 2021 Michael Hayes, UCECE
 """
 
 from lcapy import f, t, G, R, C, L, CPE, Par, Ser
-import numpy as np
+from math import floor, log10
+from numpy import mean, sqrt, pi as npi
 from .engformatter import EngFormatter
 
 models = {}
+
+
+def round_to_n(x, n):
+    """Round to n significant figures."""
+
+    if x == 0:
+        return x
+
+    return round(x, -int(floor(log10(abs(x)))) + (n - 1))
 
 
 def modelmake(name, net, paramnames=None):
@@ -117,7 +127,7 @@ class Model(object):
             self.__class__._Zcode = self._Zbuild()
 
         j = 1j
-        pi = np.pi
+        pi = npi
 
         return eval(self._Zcode)
 
@@ -129,7 +139,7 @@ class Model(object):
             self.__class__._Ycode = self._Ybuild()
 
         j = 1j
-        pi = np.pi
+        pi = pi
 
         return eval(self._Ycode)
 
@@ -155,13 +165,13 @@ class Model(object):
 
         return ', '.join(parts)
 
-    def defs(self):
+    def defs(self, dp=10):
 
         defs = {}
         for var, val in vars(self).items():
             if var[0] == '_':
                 continue
-            defs[var] = val
+            defs[var] = round_to_n(val, dp)
 
         return defs
 
@@ -172,13 +182,13 @@ class Model(object):
     def Yrmse(self, f, Y):
 
         Yerr = Y - self.Y(f)
-        rmse = np.sqrt(np.mean(Yerr.real**2 + Yerr.imag**2))
+        rmse = sqrt(mean(Yerr.real**2 + Yerr.imag**2))
         return rmse
 
     def Zrmse(self, f, Z):
 
         Zerr = Z - self.Z(f)
-        rmse = np.sqrt(np.mean(Zerr.real**2 + Zerr.imag**2))
+        rmse = sqrt(mean(Zerr.real**2 + Zerr.imag**2))
         return rmse
 
     @property

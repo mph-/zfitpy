@@ -121,6 +121,8 @@ def main():
                         help='plot series resistance')
     parser.add_argument('--Zoffset', type=float, default=0,
                         help='impedance offset to add')
+    parser.add_argument('--sigfigs', type=int, default=10,
+                        help='set number of significant figures when printing defs')
 
     args = parser.parse_args()
 
@@ -173,7 +175,7 @@ def main():
         if args.error:
             print('error=%.3e' % fitmodel.error)
         if args.defs:
-            print(fitmodel.defs())
+            print(fitmodel.defs(args.sigfigs))
         if args.values:
             print(fitmodel)
         if not (args.error or args.defs or args.values):
