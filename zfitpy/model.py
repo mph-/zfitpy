@@ -139,7 +139,7 @@ class Model(object):
             self.__class__._Ycode = self._Ybuild()
 
         j = 1j
-        pi = pi
+        pi = npi
 
         return eval(self._Ycode)
 
