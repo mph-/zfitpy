@@ -134,6 +134,9 @@ def main():
     parser.add_argument('--data-magphase', action='store_true',
                         default=False,
                         help='interpret data as magnitude/phase')
+    parser.add_argument('--percent', action='store_true',
+                        default=False,
+                        help='show fitting error as percentage')
 
     args = parser.parse_args()
 
@@ -196,7 +199,7 @@ def main():
 
     plotter = Plotter(args.admittance, args.logf)
     if args.plot_error and fitmodel:
-        plotter.error(data, fitmodel, title=args.title)
+        plotter.error(data, fitmodel, title=args.title, percent=args.percent)
 
     if args.plot_fit:
         if args.nyquist:

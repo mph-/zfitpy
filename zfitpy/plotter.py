@@ -38,7 +38,7 @@ class Plotter:
         axes.set_title(title)
         return axes
 
-    def error(self, data, model, axes=None, title=None):
+    def error(self, data, model, axes=None, title=None, percent=False):
 
         mZ = model.Z(data.f)
         dZ = data.Z
@@ -54,12 +54,20 @@ class Plotter:
         else:
             plot = axes.plot
 
-        plot(data.f, (dZ.real - mZ.real), label=data.name + ' real')
-        plot(data.f, (dZ.imag - mZ.imag),
-             '--', label=data.name + ' imag')
+        ereal = dZ.real - mZ.real
+        eimag = dZ.imag - mZ.imag
+        if percent:
+            ereal = ereal / dZ.real * 100
+            eimag = eimag / dZ.imag * 100
+
+        plot(data.f, ereal, label=data.name + ' real')
+        plot(data.f, eimag, '--', label=data.name + ' imag')
 
         axes.set_xlabel('Frequency (Hz)')
-        axes.set_ylabel(f'{self.label} error ({self.units})')
+        if percent:
+            axes.set_ylabel('Percent error')
+        else:
+            axes.set_ylabel(f'{self.label} error ({self.units})')
         axes.grid(True)
 
         self.set_title(axes, title, model)
