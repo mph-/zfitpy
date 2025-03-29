@@ -63,6 +63,8 @@ class KeysightE4990AImpedanceData(ImpedanceData):
             Ls = foo[:, 1]
             Rs = foo[:, 2]
             Z = Rs + 1j * 2 * pi * f * Ls
+        elif lines[4].startswith('Frequency(Hz), |Z|(Ohm)-data'):
+            raise ValueError('No phase information for Keysight E4990A')
         else:
             raise ValueError('Unhandled format for Keysight E4990A')
 

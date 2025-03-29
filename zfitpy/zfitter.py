@@ -5,6 +5,7 @@ Copyright 2021 Michael Hayes, UCECE"""
 from .zfitterbrute import ZFitterBrute
 from .zfittercurve import ZFitterCurve
 
+
 class ZFitter(object):
 
     def __init__(self, model, f, Z):
@@ -38,16 +39,18 @@ class ZFitter(object):
         if fmax is not None:
             m = f <= fmax
             f = f[m]
-            Z = Z[m]            
-        
+            Z = Z[m]
+
         if method == 'brute':
             fitter = ZFitterBrute(self._model, f, Z)
         elif method in ('trf', 'dogbox'):
             fitter = ZFitterCurve(self._model, f, Z)
         else:
-            raise ValueError('Unknown method %s: needs to be brute, trf, dogbox' % method)
-        
-        model, rmse, cov = fitter.optimize(ranges, opt, method=method, **kwargs)
+            raise ValueError(
+                'Unknown method %s: needs to be brute, trf, dogbox' % method)
+
+        model, rmse, cov = fitter.optimize(
+            ranges, opt, method=method, **kwargs)
         model._rmse = rmse
         model._cov = cov
         model._method = method

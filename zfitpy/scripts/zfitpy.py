@@ -81,6 +81,9 @@ def main():
                         default=False, help='show plot')
     parser.add_argument('--nyquist', action='store_true',
                         default=False, help='use Nyquist plot')
+    parser.add_argument('--admittance', action='store_true',
+                        default=False,
+                        help='plot admittance rather than impedance')
     parser.add_argument('--plot-error', action='store_true',
                         default=False, help='plot impedance error')
     parser.add_argument('--plot-fit', action='store_true',
@@ -183,26 +186,44 @@ def main():
 
     plotter = Plotter()
     if args.plot_error and fitmodel:
-        plotter.Z_error(data, fitmodel, title=args.title)
+        if args.admittance:
+            plotter.Y_error(data, fitmodel, title=args.title)
+        else:
+            plotter.Z_error(data, fitmodel, title=args.title)
 
     if args.plot_fit:
         if args.nyquist:
-            plotter.Z_nyquist(data, fitmodel, title=args.title)
+            if args.admittance:
+                plotter.Y_nyquist(data, fitmodel, title=args.title)
+            else:
+                plotter.Z_nyquist(data, fitmodel, title=args.title)
         elif args.Ls or args.Rs:
             plotter.LsRs_fit(data, fitmodel, title=args.title,
                              doLs=args.Ls, doRs=args.Rs)
         else:
-            plotter.Z_fit(data, fitmodel, title=args.title,
-                          magphase=args.magphase)
+            if args.admittance:
+                plotter.Y_fit(data, fitmodel, title=args.title,
+                              magphase=args.magphase)
+            else:
+                plotter.Z_fit(data, fitmodel, title=args.title,
+                              magphase=args.magphase)
 
     if args.plot_data:
         if args.nyquist:
-            plotter.Z_nyquist(data, None, title=args.title)
+            if args.admittance:
+                plotter.Y_nyquist(data, None, title=args.title)
+            else:
+                plotter.Z_nyquist(data, None, title=args.title)
         elif args.Ls or args.Rs:
             plotter.LsRs_fit(data, None, title=args.title,
                              doLs=args.Ls, doRs=args.Rs)
         else:
-            plotter.Z_fit(data, None, title=args.title, magphase=args.magphase)
+            if args.admittance:
+                plotter.Y_fit(data, None, title=args.title,
+                              magphase=args.magphase)
+            else:
+                plotter.Z_fit(data, None, title=args.title,
+                              magphase=args.magphase)
 
     if args.output_filename is not None:
         savefig(args.output_filename, bbox_inches='tight')

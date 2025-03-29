@@ -8,7 +8,7 @@ from .zfitterbase import ZFitterBase
 
 
 class ZFitterCurve(ZFitterBase):
-    """Class for non-linear least-squares usin the trf and dogbox
+    """Class for non-linear least-squares using the trf and dogbox
     SciPy algorithms."""
 
     def Z_params(self, f, *params):
