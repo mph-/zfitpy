@@ -1,6 +1,6 @@
 """This module parses impedance data.
 
-Copyright 2021--2022 Michael Hayes, UCECE"""
+Copyright 2021--2025 Michael Hayes, UCECE"""
 
 from numpy import loadtxt, pi, sin, cos, radians, exp
 from os.path import basename, splitext

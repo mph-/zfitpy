@@ -10,7 +10,7 @@ Copyright 2021 Michael Hayes, UCECE
 
 """
 
-from lcapy import f, t, G, R, C, L, CPE, Par, Ser
+from lcapy import f, t, G, R, C, L, CPE, Par, Ser, jf
 from math import floor, log10
 from numpy import mean, sqrt, pi as npi
 from .engformatter import EngFormatter
@@ -37,7 +37,7 @@ def modelmake(name, net, paramnames=None):
             # For Lcapy 0.99
             paramnames = net.params
         except:
-            Z = eval('(%s).Z(f)' % net)
+            Z = eval('(%s).Z(jf)' % net)
             paramnames = Z.symbols
             paramnames.pop('t', None)
             paramnames.pop('f', None)
@@ -113,11 +113,11 @@ class Model(object):
 
     def _Ybuild(self):
 
-        return self._build(self._net.Y(f), 'Y')
+        return self._build(self._net.Y(jf), 'Y')
 
     def _Zbuild(self):
 
-        return self._build(self._net.Z(f), 'Z')
+        return self._build(self._net.Z(jf), 'Z')
 
     def Z(self, f):
         """Return impedance at frequency `f`; `f` can be an ndarray."""
