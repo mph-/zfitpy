@@ -1,6 +1,6 @@
 #!/usr/bin/python3
-"""zfitpy V0.3.6
-Copyright (c) 2021 Michael P. Hayes, UC ECE, NZ
+"""zfitpy V0.3.7
+Copyright (c) 2021--2025 Michael P. Hayes, UC ECE, NZ
 
 Usage:
 
@@ -128,6 +128,12 @@ def main():
                         help='impedance offset to add')
     parser.add_argument('--sigfigs', type=int, default=10,
                         help='set number of significant figures when printing defs')
+    parser.add_argument('--data-admittance', action='store_true',
+                        default=False,
+                        help='interpret data as admittance')
+    parser.add_argument('--data-magphase', action='store_true',
+                        default=False,
+                        help='interpret data as magnitude/phase')
 
     args = parser.parse_args()
 
@@ -157,7 +163,9 @@ def main():
 
     data = impedancedata(args.input_filename,
                          fmin=args.fmin, fmax=args.fmax,
-                         conjugate=args.conjugate)
+                         conjugate=args.conjugate,
+                         admittance=args.data_admittance,
+                         magphase=args.data_magphase)
     if args.Zoffset != 0:
         data.Z += args.Zoffset
 

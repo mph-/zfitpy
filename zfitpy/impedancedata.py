@@ -2,7 +2,7 @@
 
 Copyright 2021--2022 Michael Hayes, UCECE"""
 
-from numpy import loadtxt, pi, sin, cos, radians
+from numpy import loadtxt, pi, sin, cos, radians, exp
 from os.path import basename, splitext
 
 
@@ -75,20 +75,29 @@ class KeysightE4990AImpedanceData(ImpedanceData):
 
 class GenericImpedanceData(ImpedanceData):
 
-    def __init__(self, filename, fmin, fmax, conjugate):
+    def __init__(self, filename, fmin, fmax, conjugate,
+                 admittance=False, magphase=False):
 
         foo = loadtxt(filename, skiprows=0, delimiter=',', comments='#')
         if foo.shape[1] != 3:
             raise ValueError('Expecting 3 columns (frequency, real, imag')
 
         f = foo[:, 0]
-        Z = foo[:, 1] + 1j * foo[:, 2]
+
+        if magphase:
+            Z = foo[:, 1] * exp(1j * radians(foo[:, 2]))
+        else:
+            Z = foo[:, 1] + 1j * foo[:, 2]
+
+        if admittance:
+            Z = 1 / Z
 
         super(GenericImpedanceData, self).__init__(filename, f, Z,
                                                    fmin, fmax, conjugate)
 
 
-def impedancedata(filename, fmin=None, fmax=None, conjugate=False):
+def impedancedata(filename, fmin=None, fmax=None, conjugate=False,
+                  admittance=False, magphase=False):
 
     try:
         open(filename)
@@ -101,7 +110,8 @@ def impedancedata(filename, fmin=None, fmax=None, conjugate=False):
         pass
 
     try:
-        return GenericImpedanceData(filename, fmin, fmax, conjugate)
+        return GenericImpedanceData(filename, fmin, fmax, conjugate,
+                                    admittance, magphase)
     except:
         pass
 

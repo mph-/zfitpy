@@ -72,7 +72,6 @@ class Plotter:
 
     def fit(self, data, model=None, axes=None, title=None, magphase=False):
 
-        breakpoint()
         if model is not None:
             mZ = model.Z(data.f)
             if self.admittance:
