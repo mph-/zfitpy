@@ -6,7 +6,19 @@ from matplotlib.pyplot import subplots
 from numpy import degrees, angle, pi
 
 
-class Plotter(object):
+class Plotter:
+
+    def __init__(self, admittance=False, logf=False):
+
+        self.admittance = admittance
+        self.logf = logf
+
+        if self.admittance:
+            self.label = 'Admittance'
+            self.units = 'siemens'
+        else:
+            self.label = 'Impedance'
+            self.units = 'ohms'
 
     def set_title(self, axes, title=None, model=None, sfmax=2):
 
@@ -26,105 +38,131 @@ class Plotter(object):
         axes.set_title(title)
         return axes
 
-    def Z_error(self, data, model, axes=None, title=None):
+    def error(self, data, model, axes=None, title=None):
 
-        Z = model.Z(data.f)
+        mZ = model.Z(data.f)
+        dZ = data.Z
+        if self.admittance:
+            mZ = 1 / mZ
+            dZ = 1 / dZ
 
         if axes is None:
             fig, axes = subplots(1)
 
-        axes.plot(data.f, (data.Z.real - Z.real), label=data.name + ' real')
-        axes.plot(data.f, (data.Z.imag - Z.imag),
-                  '--', label=data.name + ' imag')
+        if self.logf:
+            plot = axes.semilogx
+        else:
+            plot = axes.plot
+
+        plot(data.f, (dZ.real - mZ.real), label=data.name + ' real')
+        plot(data.f, (dZ.imag - mZ.imag),
+             '--', label=data.name + ' imag')
 
         axes.set_xlabel('Frequency (Hz)')
-        axes.set_ylabel('Impedance error (ohms)')
+        axes.set_ylabel(f'{self.label} error ({self.units})')
         axes.grid(True)
 
         self.set_title(axes, title, model)
         axes.legend()
         return axes
 
-    def Z_fit(self, data, model=None, axes=None, title=None, magphase=False):
+    def data(self, data, axes=None, title=None, magphase=False):
 
+        self.fit(data, None, axes, title, magphase)
+
+    def fit(self, data, model=None, axes=None, title=None, magphase=False):
+
+        breakpoint()
         if model is not None:
-            Z = model.Z(data.f)
+            mZ = model.Z(data.f)
+            if self.admittance:
+                mZ = 1 / mZ
         else:
-            Z = None
+            mZ = None
+
+        dZ = data.Z
+        if self.admittance:
+            dZ = 1 / dZ
 
         if axes is None:
             fig, axes = subplots(1)
+
+        if self.logf:
+            plot = axes.semilogx
+        else:
+            plot = axes.plot
 
         if magphase:
-            ax2 = axes.twinx()
+            axes2 = axes.twinx()
 
-            axes.plot(data.f, abs(data.Z), label=data.name + ' data mag')
-            ax2.plot(data.f, degrees(angle(data.Z)), '--',
-                     label=data.name + ' data phase')
-            if Z is not None:
-                axes.plot(data.f, abs(Z), label=data.name + ' model mag')
-                ax2.plot(data.f, degrees(angle(Z)), '--',
-                         label=data.name + ' model phase')
-            ax2.legend()
-            ax2.set_ylabel('Impedance phase (degrees)')
+            if self.logf:
+                plot2 = axes2.semilogx
+            else:
+                plot2 = axes2.plot
+
+            plot(data.f, abs(dZ), label=data.name + ' data mag')
+            plot2(data.f, degrees(angle(dZ)), '--',
+                  label=data.name + ' data phase')
+            if mZ is not None:
+                plot(data.f, abs(mZ), label=data.name + ' model mag')
+                plot2(data.f, degrees(angle(mZ)), '--',
+                      label=data.name + ' model phase')
+            axes2.legend()
+            axes2.set_ylabel(f'{self.label} phase (degrees)')
 
         else:
-            axes.plot(data.f, data.Z.real, label=data.name + ' data real')
-            axes.plot(data.f, data.Z.imag, '--',
-                      label=data.name + ' data imag')
+            plot(data.f, dZ.real, label=data.name + ' data real')
+            plot(data.f, dZ.imag, '--',
+                 label=data.name + ' data imag')
 
-            if Z is not None:
-                axes.plot(data.f, Z.real, label=data.name + ' model real')
-                axes.plot(data.f, Z.imag, '--',
-                          label=data.name + ' model imag')
+            if mZ is not None:
+                plot(data.f, mZ.real, label=data.name + ' model real')
+                plot(data.f, mZ.imag, '--',
+                     label=data.name + ' model imag')
 
         axes.set_xlabel('Frequency (Hz)')
-        axes.set_ylabel('Impedance (ohms)')
+        axes.set_ylabel(f'{self.label} ({self.units})')
         axes.grid(True)
 
         self.set_title(axes, title, model)
         axes.legend()
         return axes
 
-    def Z_nyquist(self, data, model=None, axes=None, title=None):
+    def nyquist(self, data, model=None, axes=None, title=None):
+
+        dZ = data.Z
+        if self.admittance:
+            dZ = 1 / dZ
 
         if model is not None:
-            Z = model.Z(data.f)
+            mZ = model.Z(data.f)
+            if self.admittance:
+                mZ = 1 / mZ
         else:
-            Z = None
+            mZ = None
 
         if axes is None:
             fig, axes = subplots(1)
 
-        axes.plot(data.Z.real, data.Z.imag, label=data.name + ' data')
-        if Z is not None:
-            axes.plot(Z.real, Z.imag, label=data.name + ' model')
+        axes.plot(dZ.real, dZ.imag, label=data.name + ' data')
+        if mZ is not None:
+            axes.plot(mZ.real, mZ.imag, label=data.name + ' model')
 
-        axes.set_xlabel('Impedance real (ohms)')
-        axes.set_ylabel('Impedance imag (ohms)')
+        axes.set_xlabel(f'{self.label} real ({self.units})')
+        axes.set_ylabel(f'{self.label} imag ({self.units})')
         axes.grid(True)
 
         self.set_title(axes, title, model)
         axes.legend()
         return axes
 
-    def Z(self, data, axes=None, title=None):
+    def difference(self, data1, data2, axes=None, title=None):
 
-        if axes is None:
-            fig, axes = subplots(1)
-
-        axes.plot(data.f, data.Z.real, label=data.name + ' real')
-        axes.plot(data.f, data.Z.imag, '--', label=data.name + ' imag')
-
-        axes.set_xlabel('Frequency (Hz)')
-        axes.set_ylabel('Impedance (ohms)')
-        axes.grid(True)
-
-        self.set_title(axes, title, model=None)
-        axes.legend()
-        return axes
-
-    def Z_difference(self, data1, data2, axes=None, title=None):
+        dZ1 = data1.Z
+        dZ2 = data2.Z
+        if self.admittance:
+            dZ1 = 1 / dZ1
+            dZ2 = 1 / dZ2
 
         if axes is None:
             fig, axes = subplots(1)
@@ -132,9 +170,7 @@ class Plotter(object):
         if not (data1.f == data2.f).all():
             raise ValueError('Mismatched frequencies')
 
-        Z1 = data1.Z
-        Z2 = data2.Z
-        Zdiff = Z1 - Z2
+        Zdiff = dZ1 - dZ2
 
         name = '(%s - %s)' % (data1.name, data2.name)
 
@@ -142,7 +178,7 @@ class Plotter(object):
         axes.plot(data1.f, Zdiff.imag, '--', label=name + ' imag')
 
         axes.set_xlabel('Frequency (Hz)')
-        axes.set_ylabel('Impedance error (ohms)')
+        axes.set_ylabel(f'{self.label} error ({self.units})')
         axes.grid(True)
 
         self.set_title(axes, title, model=None)
@@ -212,127 +248,4 @@ class Plotter(object):
             Lsaxes.legend()
         if Rsaxes is not None:
             Rsaxes.legend()
-        return axes
-
-    def Y_error(self, data, model, axes=None, title=None):
-
-        Y = model.Y(data.f)
-
-        if axes is None:
-            fig, axes = subplots(1)
-
-        axes.plot(data.f, (data.Y.real - Y.real), label=data.name + ' real')
-        axes.plot(data.f, (data.Y.imag - Y.imag),
-                  '--', label=data.name + ' imag')
-
-        axes.set_xlabel('Frequency (Hz)')
-        axes.set_ylabel('Admittance error (S)')
-        axes.grid(True)
-
-        self.set_title(axes, title, model)
-        axes.legend()
-        return axes
-
-    def Y_fit(self, data, model=None, axes=None, title=None, magphase=False):
-
-        if model is not None:
-            Y = model.Y(data.f)
-        else:
-            Y = None
-
-        if axes is None:
-            fig, axes = subplots(1)
-
-        if magphase:
-            ax2 = axes.twinx()
-
-            axes.plot(data.f, abs(data.Y), label=data.name + ' data mag')
-            ax2.plot(data.f, degrees(angle(data.Y)), '--',
-                     label=data.name + ' data phase')
-            if Y is not None:
-                axes.plot(data.f, abs(Y), label=data.name + ' model mag')
-                ax2.plot(data.f, degrees(angle(Y)), '--',
-                         label=data.name + ' model phase')
-            ax2.legend()
-            ax2.set_ylabel('Admittance phase (degrees)')
-
-        else:
-            axes.plot(data.f, data.Y.real, label=data.name + ' data real')
-            axes.plot(data.f, data.Y.imag, '--',
-                      label=data.name + ' data imag')
-
-            if Y is not None:
-                axes.plot(data.f, Y.real, label=data.name + ' model real')
-                axes.plot(data.f, Y.imag, '--',
-                          label=data.name + ' model imag')
-
-        axes.set_xlabel('Frequency (Hz)')
-        axes.set_ylabel('Admittance (S)')
-        axes.grid(True)
-
-        self.set_title(axes, title, model)
-        axes.legend()
-        return axes
-
-    def Y_nyquist(self, data, model=None, axes=None, title=None):
-
-        if model is not None:
-            Y = model.Y(data.f)
-        else:
-            Y = None
-
-        if axes is None:
-            fig, axes = subplots(1)
-
-        axes.plot(data.Y.real, data.Y.imag, label=data.name + ' data')
-        if Y is not None:
-            axes.plot(Y.real, Y.imag, label=data.name + ' model')
-
-        axes.set_xlabel('Admittance real (S)')
-        axes.set_ylabel('Admittance imag (S)')
-        axes.grid(True)
-
-        self.set_title(axes, title, model)
-        axes.legend()
-        return axes
-
-    def Y(self, data, axes=None, title=None):
-
-        if axes is None:
-            fig, axes = subplots(1)
-
-        axes.plot(data.f, data.Y.real, label=data.name + ' real')
-        axes.plot(data.f, data.Y.imag, '--', label=data.name + ' imag')
-
-        axes.set_xlabel('Frequency (Hz)')
-        axes.set_ylabel('Admittance (S)')
-        axes.grid(True)
-
-        self.set_title(axes, title, model=None)
-        axes.legend()
-        return axes
-
-    def Y_difference(self, data1, data2, axes=None, title=None):
-
-        if axes is None:
-            fig, axes = subplots(1)
-
-        if not (data1.f == data2.f).all():
-            raise ValueError('Mismatched frequencies')
-
-        Y1 = data1.Y
-        Y2 = data2.Y
-        Ydiff = Y1 - Y2
-
-        name = '(%s - %s)' % (data1.name, data2.name)
-
-        axes.plot(data1.f, Ydiff.real, label=name + ' real')
-        axes.plot(data1.f, Ydiff.imag, '--', label=name + ' imag')
-
-        axes.set_xlabel('Frequency (Hz)')
-        axes.set_ylabel('Admittance error (S)')
-        axes.grid(True)
-
-        self.set_title(axes, title, model=None)
-        axes.legend()
         return axes
