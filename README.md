@@ -7,7 +7,12 @@ This Python module is for fitting electrical models to measured impedance data. 
 Installation
 ============
 
-The easiest way is using the command line command:
+To install from pypi use:
+
+    $ pip install zfitpy
+
+
+To install from sources use:
 
    $ pip install .
 
@@ -28,10 +33,26 @@ print(fitmodel)
 print(fitmodel.error)
 ```
 
-Here `Ns` specifies the number of steps in each search range.  It can be explicitly defined for each search range, for example,
+Here `Ns` specifies the number of steps in each search range for a brute force search.  It can be explicitly defined for each search range, for example,
 
 ``` python
 ranges = {'R1': (1e-3, 1e3, 10), 'K': (1e-3, 1e3, 20), 'alpha': (-1, 1), 'R2': (100, 1e4)}
+```
+
+The default optimizer is brute force, however, this is only suitable for models with few parameters and few steps in each search range.  The optimizer can be changed with the `method` argument to `zfit`, for example,
+
+``` python
+data, fitmodel = zfit('E4990A-example1.csv', net, ranges, method='trf')
+```
+
+`method` can be 'brute', 'trf', or 'dogbox'.
+
+The fit between the measured data and best-fit model can be plotted using:
+
+``` python
+from zfitpy import Plotter
+plotter = Plotter()
+plotter.fit(data, fitmodel)
 ```
 
 The error between the measured data and best-fit model can be plotted using:
@@ -39,13 +60,26 @@ The error between the measured data and best-fit model can be plotted using:
 ``` python
 from zfitpy import Plotter
 plotter = Plotter()
-plotter.Z_error(data, fitmodel)
+plotter.error(data, fitmodel)
 ```
 
-Note, a parameter names cannot be a substring of another parameter
-name, i.e., 'R' cannot be used if there is a parameter 'R1'.
+The model can be drawn using:
+``` python
+fitmodel.draw()
+```
 
-   
+The `draw` method takes an optional filename to save the drawing.  Supported file formats are 'pdf', 'jpg', 'png', and 'pgf', for example,
+``` python
+fitmodel.draw('model.pdf')
+```
+
+Caveats
+-------
+
+A parameter name cannot be a substring of another parameter name,
+i.e., 'R' cannot be used if there is a parameter 'R1'.
+
+
 zfitpy
 ======
 
@@ -55,7 +89,7 @@ electrical models to impedance data.   For example:
 ``` bash
    $ zfitpy --net "L('L1') + (R('R1') | (L('L2') + R('R2')))" --ranges="{'R1':(0,5e3),'L1':(1e-3,20e-3),'R2':(0,0.1),'L2':(1e-3,20e-3)}" --input demo/E4990A-example1.csv --plot-error
 ```
-   
+
 The network is specified using Lcapy notation for networks.  This example uses a network comprised of a parallel combination of RL series networks.  The network can be drawn using:
 
 ``` bash
@@ -77,7 +111,7 @@ The impedance of the data and model can be plotted using:
 ```
    $ zfitpy --plot-fit --net "L('L1') + (R('R1') | (L('L2') + R('R2')))" --ranges="{'R1':(0,5e3),'L1':(1e-3,20e-3),'R2':(0,0.1),'L2':(1e-3,20e-3)}" --input demo/E4990A-example1.csv
 ```
-   
+
 ![](doc/fit1.png)
 
 The impedance error between the data and model can be plotted using:
