@@ -1,10 +1,15 @@
 .PHONY: install
 install:
-	python3 setup.py install
+	#python3 setup.py install
+	pip3 install -e .
+
+.PHONY: install-extras
+install-extras:
 
 .PHONY: package
 package:
 	python3 setup.py sdist bdist_wheel
+
 
 .PHONY: upload-test
 upload-test: package
@@ -16,15 +21,13 @@ upload: package
 
 .PHONY: test
 test: zfitpy/*.py
-	nosetests3 -s --pdb
+	# pytest -s --pdb -o cache_dir=test/.pytest_cache
+	# pytest --pdb zfitpy/tests
 
 .PHONY: cover
 cover: zfitpy/*.py
-	nosetests3 --pdb --with-coverage --cover-package=zfitpy --cover-html
-
-.PHONY: doc-install
-doc-install: doc
-	scp -r doc/_build/html/* zfitpy.elec.canterbury.ac.nz:/var/www/zfitpy/
+	coverage run -m pytest -s --pdb --pyargs zfitpy -o cache_dir="./testing/.pytest_cache"
+	coverage html
 
 .PHONY: doc
 release: doc push
@@ -58,5 +61,5 @@ doc:
 
 .PHONY: clean
 clean:
-	-rm -rf build zfitpy.egg-info dist
+	-rm -rf build zfitpy.egg-info dist testing
 	cd doc; make clean
