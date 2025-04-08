@@ -1,6 +1,6 @@
 """This module is a wrapper for the SciPy optimizers
 
-Copyright 2021 Michael Hayes, UCECE"""
+Copyright 2021--2025 Michael Hayes, UCECE"""
 
 from .zfitterbrute import ZFitterBrute
 from .zfittercurve import ZFitterCurve
@@ -13,8 +13,8 @@ class ZFitter(object):
         self.f = f
         self.Z = Z
 
-    def __call__(self, ranges=None, opt=None, method='brute', fmin=None, fmax=None,
-                 **kwargs):
+    def __call__(self, ranges=None, opt=None, method='brute',
+                 fmin=None, fmax=None, **kwargs):
 
         parts = method.split('-')
         if len(parts) > 2:
@@ -54,5 +54,12 @@ class ZFitter(object):
         model._rmse = rmse
         model._cov = cov
         model._method = method
+
+        for param, r in ranges.items():
+            value = getattr(model, param)
+            if value <= r[0]:
+                print(f'Parameter {param}={value} at or below bound {r[0]}')
+            elif value >= r[1]:
+                print(f'Parameter {param}={value} at or above bound {r[1]}')
 
         return model

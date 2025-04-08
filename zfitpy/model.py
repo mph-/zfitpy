@@ -66,6 +66,7 @@ class Model(object):
         if len(args) == 0:
             return
 
+        # Add parameter attributes
         for m, p in enumerate(self.paramnames):
             setattr(self, p, args[m])
 
