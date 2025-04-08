@@ -1,6 +1,6 @@
 """This module provides plotting support for impedance data.
 
-Copyright 2021 Michael Hayes, UCECE"""
+Copyright 2021--2025 Michael Hayes, UCECE"""
 
 from matplotlib.pyplot import subplots
 from numpy import degrees, angle, pi
@@ -12,13 +12,6 @@ class Plotter:
 
         self.admittance = admittance
         self.logf = logf
-
-        if self.admittance:
-            self.label = 'Admittance'
-            self.units = 'siemens'
-        else:
-            self.label = 'Impedance'
-            self.units = 'ohms'
 
     def set_title(self, axes, title=None, model=None, sfmax=2):
 
@@ -38,11 +31,30 @@ class Plotter:
         axes.set_title(title)
         return axes
 
-    def error(self, data, model, axes=None, title=None, percent=False):
+    def Y_error(self, data, model, axes=None, title=None, percent=False):
+
+        return self.error(data, model, axes, title, percent, admittance=True)
+
+    def Z_error(self, data, model, axes=None, title=None, percent=False):
+
+        return self.error(data, model, axes, title, percent, admittance=False)
+
+    def error(self, data, model, axes=None, title=None, percent=False,
+              admittance=None):
+
+        if admittance is None:
+            admittance = self.admittance
+
+        if admittance:
+            label = 'Admittance'
+            units = 'siemens'
+        else:
+            label = 'Impedance'
+            units = 'ohms'
 
         mZ = model.Z(data.f)
         dZ = data.Z
-        if self.admittance:
+        if admittance:
             mZ = 1 / mZ
             dZ = 1 / dZ
 
@@ -67,28 +79,56 @@ class Plotter:
         if percent:
             axes.set_ylabel('Percent error')
         else:
-            axes.set_ylabel(f'{self.label} error ({self.units})')
+            axes.set_ylabel(f'{label} error ({units})')
         axes.grid(True)
 
         self.set_title(axes, title, model)
         axes.legend()
         return axes
 
-    def data(self, data, axes=None, title=None, magphase=False):
+    def Y_data(self, data, axes=None, title=None, magphase=False):
 
-        self.fit(data, None, axes, title, magphase)
+        self.data(data, axes, title, magphase, True)
 
-    def fit(self, data, model=None, axes=None, title=None, magphase=False):
+    def Z_data(self, data, axes=None, title=None, magphase=False):
+
+        self.data(data, axes, title, magphase, False)
+
+    def data(self, data, axes=None, title=None, magphase=False,
+             admittance=None):
+
+        self.fit(data, None, axes, title, magphase, admittance)
+
+    def Y_fit(self, data, model=None, axes=None, title=None, magphase=False):
+
+        self.fit(data, model, axes, title, magphase, True)
+
+    def Z_fit(self, data, model=None, axes=None, title=None, magphase=False):
+
+        self.fit(data, model, axes, title, magphase, False)
+
+    def fit(self, data, model=None, axes=None, title=None, magphase=False,
+            admittance=None):
+
+        if admittance is None:
+            admittance = self.admittance
+
+        if admittance:
+            label = 'Admittance'
+            units = 'siemens'
+        else:
+            label = 'Impedance'
+            units = 'ohms'
 
         if model is not None:
             mZ = model.Z(data.f)
-            if self.admittance:
+            if admittance:
                 mZ = 1 / mZ
         else:
             mZ = None
 
         dZ = data.Z
-        if self.admittance:
+        if admittance:
             dZ = 1 / dZ
 
         if axes is None:
@@ -115,7 +155,7 @@ class Plotter:
                 plot2(data.f, degrees(angle(mZ)), '--',
                       label=data.name + ' model phase')
             axes2.legend()
-            axes2.set_ylabel(f'{self.label} phase (degrees)')
+            axes2.set_ylabel(f'{label} phase (degrees)')
 
         else:
             plot(data.f, dZ.real, label=data.name + ' data real')
@@ -128,22 +168,40 @@ class Plotter:
                      label=data.name + ' model imag')
 
         axes.set_xlabel('Frequency (Hz)')
-        axes.set_ylabel(f'{self.label} ({self.units})')
+        axes.set_ylabel(f'{label} ({units})')
         axes.grid(True)
 
         self.set_title(axes, title, model)
         axes.legend()
         return axes
 
-    def nyquist(self, data, model=None, axes=None, title=None):
+    def Y_nyquist(self, data, model=None, axes=None, title=None):
+
+        self.nyquist(data, model, axes, title, True)
+
+    def Z_nyquist(self, data, model=None, axes=None, title=None):
+
+        self.nyquist(data, model, axes, title, False)
+
+    def nyquist(self, data, model=None, axes=None, title=None, admittance=None):
+
+        if admittance is None:
+            admittance = self.admittance
+
+        if admittance:
+            label = 'Admittance'
+            units = 'siemens'
+        else:
+            label = 'Impedance'
+            units = 'ohms'
 
         dZ = data.Z
-        if self.admittance:
+        if admittance:
             dZ = 1 / dZ
 
         if model is not None:
             mZ = model.Z(data.f)
-            if self.admittance:
+            if admittance:
                 mZ = 1 / mZ
         else:
             mZ = None
@@ -155,19 +213,37 @@ class Plotter:
         if mZ is not None:
             axes.plot(mZ.real, mZ.imag, label=data.name + ' model')
 
-        axes.set_xlabel(f'{self.label} real ({self.units})')
-        axes.set_ylabel(f'{self.label} imag ({self.units})')
+        axes.set_xlabel(f'{label} real ({units})')
+        axes.set_ylabel(f'{label} imag ({units})')
         axes.grid(True)
 
         self.set_title(axes, title, model)
         axes.legend()
         return axes
 
-    def difference(self, data1, data2, axes=None, title=None):
+    def Y_difference(self, data1, data2, axes=None, title=None):
+
+        self.difference(data1, data2, axes, title, True)
+
+    def Z_difference(self, data1, data2, axes=None, title=None):
+
+        self.difference(data1, data2, axes, title, False)
+
+    def difference(self, data1, data2, axes=None, title=None, admittance=None):
+
+        if admittance is None:
+            admittance = self.admittance
+
+        if admittance:
+            label = 'Admittance'
+            units = 'siemens'
+        else:
+            label = 'Impedance'
+            units = 'ohms'
 
         dZ1 = data1.Z
         dZ2 = data2.Z
-        if self.admittance:
+        if admittance:
             dZ1 = 1 / dZ1
             dZ2 = 1 / dZ2
 
@@ -185,7 +261,7 @@ class Plotter:
         axes.plot(data1.f, Zdiff.imag, '--', label=name + ' imag')
 
         axes.set_xlabel('Frequency (Hz)')
-        axes.set_ylabel(f'{self.label} error ({self.units})')
+        axes.set_ylabel(f'{label} error ({units})')
         axes.grid(True)
 
         self.set_title(axes, title, model=None)
