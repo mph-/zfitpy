@@ -90,7 +90,7 @@ class Model(object):
     def draw(self, filename=None, layout='horizontal'):
         """Draw the network."""
 
-        if filename.endswith('.sch'):
+        if filename is not None and filename.endswith('.sch'):
             outfile = open(filename, 'w')
             sch = self._net.sch(layout=layout)
             outfile.write(str(sch))
