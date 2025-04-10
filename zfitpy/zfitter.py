@@ -55,6 +55,9 @@ class ZFitter(object):
         model._cov = cov
         model._method = method
 
+        if isinstance(ranges, str):
+            ranges = eval(ranges)
+
         for param, r in ranges.items():
             value = getattr(model, param)
             if value <= r[0]:
