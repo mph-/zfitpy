@@ -108,7 +108,7 @@ class Model(object):
         for n1 in paramnames:
             for n2 in paramnames:
                 if n1 != n2 and n1 in n2:
-                    raise ValueError(f'Parameter {n1} is substring of {n2}')
+                    raise ValueError(f'Invalid parameter {n1} since substring of {n2}')
 
         codestr = str(foo)
         for p in paramnames:
