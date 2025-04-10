@@ -48,6 +48,15 @@ class KeysightE4990AImpedanceData(ImpedanceData):
             theta = radians(foo[:, 2])
             Z = (cos(theta) + 1j * sin(theta)) * A
 
+        elif lines[4].startswith('Frequency(Hz), |Y|(S)-data, theta-y(deg)-data'):
+            foo = loadtxt(filename, skiprows=5,
+                          delimiter=',', comments='END')
+            f = foo[:, 0]
+            A = foo[:, 1]
+            theta = radians(foo[:, 2])
+            Y = (cos(theta) + 1j * sin(theta)) * A
+            Z = 1 / Y
+
         elif lines[4].startswith('Frequency(Hz), R(Ohm)-data, X(Ohm)-data'):
 
             foo = loadtxt(filename, skiprows=5,
