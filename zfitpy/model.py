@@ -105,6 +105,11 @@ class Model(object):
         paramnames.pop('f', None)
 
         # FIXME if have R1 and R since the replacement will fail.
+        for n1 in paramnames:
+            for n2 in paramnames:
+                if n1 != n2 and n1 in n2:
+                    raise ValueError(f'Parameter {n1} is substring of {n2}')
+
         codestr = str(foo)
         for p in paramnames:
             codestr = codestr.replace(p, 'self.' + p)
