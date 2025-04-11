@@ -58,7 +58,7 @@ class Plotter:
 
         if admittance:
             label = 'Admittance'
-            units = 'siemens'
+            units = 'S'
         else:
             label = 'Impedance'
             units = 'ohms'
@@ -123,7 +123,7 @@ class Plotter:
 
         if admittance:
             label = 'Admittance'
-            units = 'siemens'
+            units = 'S'
         else:
             label = 'Impedance'
             units = 'ohms'
@@ -177,22 +177,25 @@ class Plotter:
         axes.legend()
         return axes
 
-    def Y_nyquist(self, data, model=None, axes=None, title=None):
+    def Y_nyquist(self, data, model=None, axes=None, title=None,
+                  fmin=None, fmax=None):
 
-        return self.nyquist(data, model, axes, title, True)
+        return self.nyquist(data, model, axes, title, True, fmin, fmax)
 
-    def Z_nyquist(self, data, model=None, axes=None, title=None):
+    def Z_nyquist(self, data, model=None, axes=None, title=None,
+                  fmin=None, fma=None):
 
-        return self.nyquist(data, model, axes, title, False)
+        return self.nyquist(data, model, axes, title, False, fmin, fmax)
 
-    def nyquist(self, data, model=None, axes=None, title=None, admittance=None):
+    def nyquist(self, data, model=None, axes=None, title=None,
+                admittance=None, fmin=None, fmax=None):
 
         if admittance is None:
             admittance = self.admittance
 
         if admittance:
             label = 'Admittance'
-            units = 'siemens'
+            units = 'S'
         else:
             label = 'Impedance'
             units = 'ohms'
@@ -201,8 +204,15 @@ class Plotter:
         if admittance:
             dZ = 1 / dZ
 
+        f = data.f
+        if fmin is None:
+            fmin = f[0]
+        if fmax is None:
+            fmax = f[-1]
+        mf = (f >= fmin) & (f <= fmax)
+
         if model is not None:
-            mZ = model.Z(data.f)
+            mZ = model.Z(f)
             if admittance:
                 mZ = 1 / mZ
         else:
@@ -211,9 +221,10 @@ class Plotter:
         if axes is None:
             fig, axes = subplots(1)
 
-        axes.plot(dZ.real, dZ.imag, label=data.latex_name + ' data')
+        axes.plot(dZ[mf].real, dZ[mf].imag, label=data.latex_name + ' data')
         if mZ is not None:
-            axes.plot(mZ.real, mZ.imag, label=data.latex_name + ' model')
+            axes.plot(mZ[mf].real, mZ[mf].imag,
+                      label=data.latex_name + ' model')
 
         axes.set_xlabel(f'{label} real ({units})')
         axes.set_ylabel(f'{label} imag ({units})')
@@ -238,7 +249,7 @@ class Plotter:
 
         if admittance:
             label = 'Admittance'
-            units = 'siemens'
+            units = 'S'
         else:
             label = 'Impedance'
             units = 'ohms'
