@@ -183,7 +183,7 @@ class Plotter:
         return self.nyquist(data, model, axes, title, True, fmin, fmax)
 
     def Z_nyquist(self, data, model=None, axes=None, title=None,
-                  fmin=None, fma=None):
+                  fmin=None, fmax=None):
 
         return self.nyquist(data, model, axes, title, False, fmin, fmax)
 

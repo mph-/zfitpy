@@ -203,7 +203,8 @@ def main():
 
     if args.plot_fit:
         if args.nyquist:
-            plotter.nyquist(data, fitmodel, title=args.title)
+            plotter.nyquist(data, fitmodel, title=args.title,
+                            fmin=args.fmin, fmax=args.fmax)
         elif args.Ls or args.Rs:
             plotter.LsRs_fit(data, fitmodel, title=args.title,
                              doLs=args.Ls, doRs=args.Rs)
@@ -213,7 +214,8 @@ def main():
 
     if args.plot_data:
         if args.nyquist:
-            plotter.nyquist(data, None, title=args.title)
+            plotter.nyquist(data, None, title=args.title,
+                            fmin=args.fmin, fmax=args.fmax)
         elif args.Ls or args.Rs:
             plotter.LsRs_fit(data, None, title=args.title,
                              doLs=args.Ls, doRs=args.Rs)
