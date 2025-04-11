@@ -13,6 +13,15 @@ class Plotter:
         self.admittance = admittance
         self.logf = logf
 
+    def _plot(self, axes):
+
+        if self.logf:
+            plot = axes.semilogx
+        else:
+            plot = axes.plot
+
+        return plot
+
     def set_title(self, axes, title=None, model=None, sfmax=2):
 
         if title is None:
@@ -63,10 +72,7 @@ class Plotter:
         if axes is None:
             fig, axes = subplots(1)
 
-        if self.logf:
-            plot = axes.semilogx
-        else:
-            plot = axes.plot
+        plot = self._plot(axes)
 
         ereal = dZ.real - mZ.real
         eimag = dZ.imag - mZ.imag
@@ -90,24 +96,24 @@ class Plotter:
 
     def Y_data(self, data, axes=None, title=None, magphase=False):
 
-        self.data(data, axes, title, magphase, True)
+        return self.data(data, axes, title, magphase, True)
 
     def Z_data(self, data, axes=None, title=None, magphase=False):
 
-        self.data(data, axes, title, magphase, False)
+        return self.data(data, axes, title, magphase, False)
 
     def data(self, data, axes=None, title=None, magphase=False,
              admittance=None):
 
-        self.fit(data, None, axes, title, magphase, admittance)
+        return self.fit(data, None, axes, title, magphase, admittance)
 
     def Y_fit(self, data, model=None, axes=None, title=None, magphase=False):
 
-        self.fit(data, model, axes, title, magphase, True)
+        return self.fit(data, model, axes, title, magphase, True)
 
     def Z_fit(self, data, model=None, axes=None, title=None, magphase=False):
 
-        self.fit(data, model, axes, title, magphase, False)
+        return self.fit(data, model, axes, title, magphase, False)
 
     def fit(self, data, model=None, axes=None, title=None, magphase=False,
             admittance=None):
@@ -136,18 +142,12 @@ class Plotter:
         if axes is None:
             fig, axes = subplots(1)
 
-        if self.logf:
-            plot = axes.semilogx
-        else:
-            plot = axes.plot
+        plot = self._plot(axes)
 
         if magphase:
             axes2 = axes.twinx()
 
-            if self.logf:
-                plot2 = axes2.semilogx
-            else:
-                plot2 = axes2.plot
+            plot2 = self._plot(axes2)
 
             plot(data.f, abs(dZ), label=data.latex_name + ' data mag')
             plot2(data.f, degrees(angle(dZ)), '--',
@@ -179,11 +179,11 @@ class Plotter:
 
     def Y_nyquist(self, data, model=None, axes=None, title=None):
 
-        self.nyquist(data, model, axes, title, True)
+        return self.nyquist(data, model, axes, title, True)
 
     def Z_nyquist(self, data, model=None, axes=None, title=None):
 
-        self.nyquist(data, model, axes, title, False)
+        return self.nyquist(data, model, axes, title, False)
 
     def nyquist(self, data, model=None, axes=None, title=None, admittance=None):
 
@@ -225,11 +225,11 @@ class Plotter:
 
     def Y_difference(self, data1, data2, axes=None, title=None):
 
-        self.difference(data1, data2, axes, title, True)
+        return self.difference(data1, data2, axes, title, True)
 
     def Z_difference(self, data1, data2, axes=None, title=None):
 
-        self.difference(data1, data2, axes, title, False)
+        return self.difference(data1, data2, axes, title, False)
 
     def difference(self, data1, data2, axes=None, title=None, admittance=None):
 
