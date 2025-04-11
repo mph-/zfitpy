@@ -28,6 +28,8 @@ class Plotter:
             if r'%model' in title:
                 title = title.replace(r'%model', model.title(sfmax=sfmax))
 
+        title = title.replace('_', '\_')
+
         axes.set_title(title)
         return axes
 
@@ -72,8 +74,8 @@ class Plotter:
             ereal = ereal / dZ.real * 100
             eimag = eimag / dZ.imag * 100
 
-        plot(data.f, ereal, label=data.name + ' real')
-        plot(data.f, eimag, '--', label=data.name + ' imag')
+        plot(data.f, ereal, label=data.latex_name + ' real')
+        plot(data.f, eimag, '--', label=data.latex_name + ' imag')
 
         axes.set_xlabel('Frequency (Hz)')
         if percent:
@@ -147,25 +149,25 @@ class Plotter:
             else:
                 plot2 = axes2.plot
 
-            plot(data.f, abs(dZ), label=data.name + ' data mag')
+            plot(data.f, abs(dZ), label=data.latex_name + ' data mag')
             plot2(data.f, degrees(angle(dZ)), '--',
-                  label=data.name + ' data phase')
+                  label=data.latex_name + ' data phase')
             if mZ is not None:
-                plot(data.f, abs(mZ), label=data.name + ' model mag')
+                plot(data.f, abs(mZ), label=data.latex_name + ' model mag')
                 plot2(data.f, degrees(angle(mZ)), '--',
-                      label=data.name + ' model phase')
+                      label=data.latex_name + ' model phase')
             axes2.legend()
             axes2.set_ylabel(f'{label} phase (degrees)')
 
         else:
-            plot(data.f, dZ.real, label=data.name + ' data real')
+            plot(data.f, dZ.real, label=data.latex_name + ' data real')
             plot(data.f, dZ.imag, '--',
-                 label=data.name + ' data imag')
+                 label=data.latex_name + ' data imag')
 
             if mZ is not None:
-                plot(data.f, mZ.real, label=data.name + ' model real')
+                plot(data.f, mZ.real, label=data.latex_name + ' model real')
                 plot(data.f, mZ.imag, '--',
-                     label=data.name + ' model imag')
+                     label=data.latex_name + ' model imag')
 
         axes.set_xlabel('Frequency (Hz)')
         axes.set_ylabel(f'{label} ({units})')
@@ -209,9 +211,9 @@ class Plotter:
         if axes is None:
             fig, axes = subplots(1)
 
-        axes.plot(dZ.real, dZ.imag, label=data.name + ' data')
+        axes.plot(dZ.real, dZ.imag, label=data.latex_name + ' data')
         if mZ is not None:
-            axes.plot(mZ.real, mZ.imag, label=data.name + ' model')
+            axes.plot(mZ.real, mZ.imag, label=data.latex_name + ' model')
 
         axes.set_xlabel(f'{label} real ({units})')
         axes.set_ylabel(f'{label} imag ({units})')
@@ -255,7 +257,7 @@ class Plotter:
 
         Zdiff = dZ1 - dZ2
 
-        name = '(%s - %s)' % (data1.name, data2.name)
+        name = '(%s - %s)' % (data1.latex_name, data2.latex_name)
 
         axes.plot(data1.f, Zdiff.real, label=name + ' real')
         axes.plot(data1.f, Zdiff.imag, '--', label=name + ' imag')
@@ -296,7 +298,7 @@ class Plotter:
 
         if Rsaxes is not None:
             Rs = data.Z.real
-            Rsaxes.plot(data.f, Rs, '--', label=data.name + ' data Rs')
+            Rsaxes.plot(data.f, Rs, '--', label=data.latex_name + ' data Rs')
             Rsaxes.set_ylabel('Resistance (ohm)')
             if Lsaxes is not None:
                 # Dummy plot to advance colour.
@@ -306,7 +308,7 @@ class Plotter:
         if Z is not None:
             if Rsaxes is not None:
                 Rs = Z.real
-                Rsaxes.plot(data.f, Rs, '--', label=data.name + ' model Rs')
+                Rsaxes.plot(data.f, Rs, '--', label=data.latex_name + ' model Rs')
             if Lsaxes is not None:
                 # Dummy plot to advance colour.
                 # Lsaxes.plot([], [])
@@ -314,13 +316,13 @@ class Plotter:
 
         if Lsaxes is not None:
             Ls = data.Z.imag / (2 * pi * data.f)
-            Lsaxes.plot(data.f, Ls * 1e3, label=data.name + ' data Ls')
+            Lsaxes.plot(data.f, Ls * 1e3, label=data.latex_name + ' data Ls')
             Lsaxes.set_ylabel('Inductance (mH)')
 
         if Z is not None:
             if Lsaxes is not None:
                 Ls = Z.imag / (2 * pi * data.f)
-                Lsaxes.plot(data.f, Ls * 1e3, label=data.name + ' model Ls')
+                Lsaxes.plot(data.f, Ls * 1e3, label=data.latex_name + ' model Ls')
 
         axes.set_xlabel('Frequency (Hz)')
         axes.grid(True)
