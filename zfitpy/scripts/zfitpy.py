@@ -99,10 +99,14 @@ def main():
         '--method', type=str, help='optimization method: brute, trf, or dogbox', default='brute')
     parser.add_argument('--steps', type=int, default=20,
                         help='the number of search steps per range')
+    parser.add_argument('--fitfmin', type=float, default=None,
+                        help='minimum frequency to use for fitting (default fmin)')
+    parser.add_argument('--fitfmax', type=float, default=None,
+                        help='maximum frequency to use for fitting (default fmax)')
     parser.add_argument('--fmin', type=float, default=None,
-                        help='minimum frequency to use for fitting')
+                        help='minimum frequency to use for plotting')
     parser.add_argument('--fmax', type=float, default=None,
-                        help='maximum frequency to use for fitting')
+                        help='maximum frequency to use for plotting')
     parser.add_argument('--finish', type=str,
                         help='finishing search method: none or fmin')
     parser.add_argument('--verbose', type=int, default=0,
@@ -169,6 +173,23 @@ def main():
                          conjugate=args.conjugate,
                          admittance=args.data_admittance,
                          magphase=args.data_magphase)
+
+    if args.fitfmin is not None or args.fitfmax is not None:
+
+        if args.fitfmin is None:
+            args.fitfmin = args.fmin
+        if args.fitfmax is None:
+            args.fitfmax = args.fmax
+
+        fitdata = impedancedata(args.input_filename,
+                                fmin=args.fitfmin, fmax=args.fitfmax,
+                                conjugate=args.conjugate,
+                                admittance=args.data_admittance,
+                                magphase=args.data_magphase)
+    else:
+        fitdata = data
+
+
     if args.Zoffset != 0:
         data.Z += args.Zoffset
 
@@ -184,7 +205,7 @@ def main():
             ranges = open(ranges).read()
 
         Model = model_make(args)
-        zfitter = ZFitter(Model, data.f, data.Z)
+        zfitter = ZFitter(Model, fitdata.f, fitdata.Z)
         fitmodel = zfitter(ranges=ranges, Ns=args.steps,
                            method=args.method, verbose=args.verbose,
                            finish=args.finish)
