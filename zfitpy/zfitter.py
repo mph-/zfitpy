@@ -4,6 +4,7 @@ Copyright 2021--2025 Michael Hayes, UCECE"""
 
 from .zfitterbrute import ZFitterBrute
 from .zfittercurve import ZFitterCurve
+from .zfitterdirect import ZFitterDirect
 
 
 class ZFitter(object):
@@ -43,6 +44,8 @@ class ZFitter(object):
 
         if method == 'brute':
             fitter = ZFitterBrute(self._model, f, Z)
+        elif method == 'direct':
+            fitter = ZFitterDirect(self._model, f, Z)
         elif method in ('trf', 'dogbox'):
             fitter = ZFitterCurve(self._model, f, Z)
         else:

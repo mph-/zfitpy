@@ -1,8 +1,8 @@
 """This module is a wrapper for the SciPy optimizers
 
-Copyright 2021 Michael Hayes, UCECE"""
+Copyright 2021--2025 Michael Hayes, UCECE"""
 
-import numpy as np
+from numpy import zeros, hstack
 from scipy.optimize import curve_fit
 from .zfitterbase import ZFitterBase
 
@@ -13,11 +13,11 @@ class ZFitterCurve(ZFitterBase):
 
     def Z_params(self, f, *params):
         Z = self._model(*params).Z(f)
-        return np.hstack((Z.real, Z.imag))
+        return hstack((Z.real, Z.imag))
 
     def Y_params(self, f, *params):
         Y = self._model(*params).Y(f)
-        return np.hstack((Y.real, Y.imag))
+        return hstack((Y.real, Y.imag))
 
     def optimize(self, ranges=None, opt='Z', ftol=1e-14, xtol=1e-14,
                  maxfev=1e5, **kwargs):
@@ -37,8 +37,8 @@ class ZFitterCurve(ZFitterBase):
 
         ranges = self._make_ranges(ranges)
 
-        bounds_min = np.zeros(len(ranges))
-        bounds_max = np.zeros(len(ranges))
+        bounds_min = zeros(len(ranges))
+        bounds_max = zeros(len(ranges))
 
         for m, r in enumerate(ranges):
             if len(r) in (2, 3):
@@ -52,13 +52,17 @@ class ZFitterCurve(ZFitterBase):
         # Initial guess.
         p0 = 0.5 * (bounds_min + bounds_max)
 
-        ydata = np.hstack((ydata.real, ydata.imag))
+        ydata = hstack((ydata.real, ydata.imag))
         params, cov = curve_fit(func, self.f, ydata, p0=p0,
                                 bounds=bounds, ftol=ftol, xtol=xtol,
                                 maxfev=maxfev, **kwargs)
-        #err = np.sqrt(np.diag(cov))
+        #err = sqrt(diag(cov))
 
         model = self._model(*params)
 
-        rmse = model.Zrmse(self.f, self.Z)
+        if opt == 'Z':
+            rmse = model.Zrmse(self.f, self.Z)
+        else:
+            rmse = model.Yrmse(self.f, self.Z)
+
         return model, rmse, cov

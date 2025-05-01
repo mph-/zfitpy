@@ -1,14 +1,13 @@
 """This module is a wrapper for the SciPy optimizers
 
-Copyright 2021 Michael Hayes, UCECE"""
+Copyright 2025 Michael Hayes, UCECE"""
 
-from scipy.optimize import brute, fmin
+from scipy.optimize import direct
 from .zfitterbase import ZFitterBase
 
 
-class ZFitterBrute(ZFitterBase):
-    """Class for non-linear least-squares using the brute force
-    SciPy algorithm."""
+class ZFitterDirect(ZFitterBase):
+    """Class for non-linear least-squares using the DIRECT algorithm."""
 
     def Zerror_params(self, params):
 
@@ -26,17 +25,15 @@ class ZFitterBrute(ZFitterBase):
             print(model, rmse)
         return rmse
 
-    def optimize(self, ranges=None, opt='Z', Ns=10, finish='fmin', **kwargs):
+    def optimize(self, ranges=None, opt='Z', maxiter=10000,
+                 maxfun=1000000, **kwargs):
         """Ranges is a list of tuples, of the form: (min, max) or (min, max,
-        numsteps).  If `numsteps` is not specified then `Ns` is used."""
+        numsteps)."""
 
+        kwargs.pop('Ns', None)
+        kwargs.pop('finish', None)
         kwargs.pop('method', None)
         self.verbose = kwargs.pop('verbose', 0)
-
-        if finish in ('none', 'None', ''):
-            finish = None
-        elif finish == 'fmin':
-            finish = fmin
 
         if opt == 'Z':
             func = self.Zerror_params
@@ -47,20 +44,24 @@ class ZFitterBrute(ZFitterBase):
 
         ranges = self._make_ranges(ranges)
 
-        oranges = []
-        for r in ranges:
-            if len(r) == 2:
-                # Note, a complex value specifies the number of steps
-                # (see numpy.mgrid).
-                oranges.append(slice(r[0], r[1], complex(Ns)))
-            elif len(r) == 3:
-                oranges.append(slice(r[0], r[1], complex(r[2])))
+        bounds = []
+
+        for m, r in enumerate(ranges):
+            if len(r) in (2, 3):
+                bounds.append((r[0], r[1]))
             else:
                 raise ValueError('Range %s can only have 2 or 3 values' % r)
 
-        params, rmse, foo, bar = brute(func, oranges, Ns=Ns, args=(),
-                                       finish=finish, full_output=1,
-                                       **kwargs)
+        res = direct(func, bounds, args=(), maxiter=maxiter, maxfun=maxfun,
+                     **kwargs)
+        params = res.x
+
+        print(res.message)
 
         model = self._model(*params)
+        if opt == 'Z':
+            rmse = model.Zrmse(self.f, self.Z)
+        else:
+            rmse = model.Yrmse(self.f, self.Z)
+
         return model, rmse, None
