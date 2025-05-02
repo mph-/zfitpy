@@ -3,7 +3,7 @@
 Copyright 2021--2025 Michael Hayes, UCECE"""
 
 from matplotlib.pyplot import subplots
-from numpy import degrees, angle, pi
+from numpy import degrees, angle, pi, linspace
 
 
 class Plotter:
@@ -344,4 +344,67 @@ class Plotter:
             Lsaxes.legend()
         if Rsaxes is not None:
             Rsaxes.legend()
+        return axes
+
+
+    def Y_slice(self, model=None, data=None, paramname=None, axes=None,
+                title=None):
+
+        return self.slice(model, data, paramname, axes, title, True)
+
+    def Z_slice(self, model=None, data=None, paramname=None, axes=None,
+                title=None):
+
+        return self.slice(model, data, paramname, axes, title, False)
+
+    def slice(self, model=None, data=None, paramname=None,
+              axes=None, title=None, admittance=None):
+
+        if paramname not in model.paramnames:
+            s = ', '.join(model.paramnames)
+            raise ValueError(f'Unknown param {paramname}.  Known params {s}')
+
+        ranges = model._ranges
+        rmin = ranges[paramname][0]
+        rmax = ranges[paramname][1]
+
+        index = model.paramnames.index(paramname)
+        params = model.params
+
+        x = linspace(rmin, rmax, 200)
+        rmse = x * 0
+
+        Model = model.__class__
+
+        if admittance is None:
+            admittance = self.admittance
+
+        if admittance:
+            label = 'Admittance'
+            units = 'S'
+        else:
+            label = 'Impedance'
+            units = 'ohms'
+
+        if admittance:
+            for m, x1 in enumerate(x):
+                params[index] = x1
+                model1 = Model(*params)
+                rmse[m] = model1.Yrmse(data.f, data.Y)
+        else:
+            for m, x1 in enumerate(x):
+                params[index] = x1
+                model1 = Model(*params)
+                rmse[m] = model1.Zrmse(data.f, data.Z)
+
+        if axes is None:
+            fig, axes = subplots(1)
+
+        axes.plot(x, rmse)
+        axes.set_xlabel('$' + paramname + '$')
+        axes.set_ylabel(f'{label} rmse ({units})')
+
+        axes.grid(True)
+
+        self.set_title(axes, title, model)
         return axes

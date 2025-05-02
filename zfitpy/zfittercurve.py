@@ -1,6 +1,6 @@
 """This module is a wrapper for the SciPy optimizers
 
-Copyright 2021--2025 Michael Hayes, UCECE"""
+Copyright 2021--2025 Michael Habyes, UCECE"""
 
 from numpy import zeros, hstack
 from scipy.optimize import curve_fit

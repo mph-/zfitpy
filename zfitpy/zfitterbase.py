@@ -27,3 +27,19 @@ class ZFitterBase(object):
                 ranges.append(rangesdict[paramname])
 
         return ranges
+
+    def Zerror_params(self, params):
+
+        model = self._model(*params)
+        rmse = model.Zrmse(self.f, self.Z)
+        if self.verbose > 1:
+            print(model, rmse)
+        return rmse
+
+    def Yerror_params(self, params):
+
+        model = self._model(*params)
+        rmse = model.Yrmse(self.f, self.Y)
+        if self.verbose > 1:
+            print(model, rmse)
+        return rmse

@@ -61,11 +61,12 @@ class ZFitter(object):
         if isinstance(ranges, str):
             ranges = eval(ranges)
 
-        for param, r in ranges.items():
-            value = getattr(model, param)
+        for paramname, r in ranges.items():
+            value = getattr(model, paramname)
             if value <= r[0]:
-                print(f'Parameter {param}={value} at or below bound {r[0]}')
+                print(f'Parameter {paramname}={value} at or below bound {r[0]}')
             elif value >= r[1]:
-                print(f'Parameter {param}={value} at or above bound {r[1]}')
+                print(f'Parameter {paramname}={value} at or above bound {r[1]}')
 
+        model._ranges = ranges
         return model

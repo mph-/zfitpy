@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""zfitpy V0.3.7
+"""zfitpy V0.4.0
 Copyright (c) 2021--2025 Michael P. Hayes, UC ECE, NZ
 
 Usage:
@@ -141,6 +141,8 @@ def main():
     parser.add_argument('--percent', action='store_true',
                         default=False,
                         help='show fitting error as percentage')
+    parser.add_argument('--slice', type=str, default=None,
+                        help='plot objective function for specfied param')
 
     args = parser.parse_args()
 
@@ -242,6 +244,9 @@ def main():
                              doLs=args.Ls, doRs=args.Rs)
         else:
             plotter.data(data, title=args.title, magphase=args.magphase)
+
+    if args.slice is not None:
+        plotter.slice(fitmodel, data, args.slice, title=args.title)
 
     if args.output_filename is not None:
         savefig(args.output_filename, bbox_inches='tight')

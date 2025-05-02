@@ -10,22 +10,6 @@ class ZFitterBrute(ZFitterBase):
     """Class for non-linear least-squares using the brute force
     SciPy algorithm."""
 
-    def Zerror_params(self, params):
-
-        model = self._model(*params)
-        rmse = model.Zrmse(self.f, self.Z)
-        if self.verbose > 1:
-            print(model, rmse)
-        return rmse
-
-    def Yerror_params(self, params):
-
-        model = self._model(*params)
-        rmse = model.Yrmse(self.f, self.Y)
-        if self.verbose > 1:
-            print(model, rmse)
-        return rmse
-
     def optimize(self, ranges=None, opt='Z', Ns=10, finish='fmin', **kwargs):
         """Ranges is a list of tuples, of the form: (min, max) or (min, max,
         numsteps).  If `numsteps` is not specified then `Ns` is used."""

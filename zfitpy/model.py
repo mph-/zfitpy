@@ -200,3 +200,11 @@ class Model(object):
     @property
     def error(self):
         return self._rmse
+
+    @property
+    def params(self):
+
+        values = []
+        for paramname in self.paramnames:
+            values.append(getattr(self, paramname))
+        return values

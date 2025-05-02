@@ -9,22 +9,6 @@ from .zfitterbase import ZFitterBase
 class ZFitterDirect(ZFitterBase):
     """Class for non-linear least-squares using the DIRECT algorithm."""
 
-    def Zerror_params(self, params):
-
-        model = self._model(*params)
-        rmse = model.Zrmse(self.f, self.Z)
-        if self.verbose > 1:
-            print(model, rmse)
-        return rmse
-
-    def Yerror_params(self, params):
-
-        model = self._model(*params)
-        rmse = model.Yrmse(self.f, self.Y)
-        if self.verbose > 1:
-            print(model, rmse)
-        return rmse
-
     def optimize(self, ranges=None, opt='Z', maxiter=10000,
                  maxfun=1000000, **kwargs):
         """Ranges is a list of tuples, of the form: (min, max) or (min, max,
