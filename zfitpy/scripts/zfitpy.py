@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""zfitpy V0.5.0
+"""zfitpy V0.5.1
 Copyright (c) 2021--2025 Michael P. Hayes, UC ECE, NZ
 
 Usage:
@@ -7,10 +7,11 @@ Usage:
 Here are some examples:
 
 zfitpy --net net --draw
-zfitpy --input data.csv --plot --output plotfilename
-zfitpy --plot-fit --net net --ranges ranges --input data.csv --plot-error
-zfitpy --plot-data --nyquist --admittance --input data.csv
-zfitpy --plot-data --nyquist --admittance --input data1.csv data2.csv
+zfitpy --input data.csv --plot-data --output data.pdf
+zfitpy --input data.csv --plot-fit --net net --ranges ranges --show
+zfitpy --input data.csv --plot-error --net net --ranges ranges --show
+zfitpy --input data.csv --plot-data --nyquist --admittance --show
+zfitpy --input data1.csv data2.csv --plot-data --nyquist --admittance --show
 zfitpy --net net --laplace
 """
 
@@ -121,7 +122,7 @@ def doit(filename, plotter, args):
     if args.plot_fit:
 
         if fitmodel is None:
-            print('No model to plot')
+            print('No model to plot for ' + filename)
 
         if args.nyquist:
             plotter.nyquist(data, fitmodel, title=args.title,
