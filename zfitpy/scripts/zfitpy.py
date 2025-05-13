@@ -10,8 +10,8 @@ zfitpy --net net --draw
 zfitpy --input data.csv --plot-data --output data.pdf
 zfitpy --input data.csv --plot-fit --net net --ranges ranges --show
 zfitpy --input data.csv --plot-error --net net --ranges ranges --show
-zfitpy --input data.csv --plot-data --nyquist --admittance --show
-zfitpy --input data1.csv data2.csv --plot-data --nyquist --admittance --show
+zfitpy --input data.csv --plot-data --nyquist --plot_admittance --show
+zfitpy --input data1.csv data2.csv --plot-data --nyquist --plot_admittance --show
 zfitpy --net net --laplace
 """
 
@@ -104,7 +104,7 @@ def doit(filename, plotter, args):
 
         Model = model_make(args)
         zfitter = ZFitter(Model, fitdata.f, fitdata.Z)
-        opt = 'Y' if args.admittance else 'Z'
+        opt = 'Y' if args.fit_admittance else 'Z'
         fitmodel = zfitter(ranges=ranges, Ns=args.steps, opt=opt,
                            method=args.method, verbose=args.verbose,
                            finish=args.finish)
@@ -169,9 +169,12 @@ def main():
                         default=False, help='show plot')
     parser.add_argument('--nyquist', action='store_true',
                         default=False, help='use Nyquist plot')
-    parser.add_argument('--admittance', action='store_true',
+    parser.add_argument('--plot-admittance', action='store_true',
                         default=False,
                         help='plot admittance rather than impedance')
+    parser.add_argument('--fit-admittance', action='store_true',
+                        default=False,
+                        help='fit admittance rather than impedance')
     parser.add_argument('--logf', action='store_true',
                         default=False, help='Plot log frequency')
     parser.add_argument('--plot-error', action='store_true',
@@ -255,7 +258,7 @@ def main():
             show()
         return 0
 
-    plotter = Plotter(args.admittance, args.logf)
+    plotter = Plotter(args.plot_admittance, args.logf)
 
     for filename in args.input_filename:
         doit(filename, plotter, args)
