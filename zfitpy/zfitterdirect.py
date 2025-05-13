@@ -46,6 +46,6 @@ class ZFitterDirect(ZFitterBase):
         if opt == 'Z':
             rmse = model.Zrmse(self.f, self.Z)
         else:
-            rmse = model.Yrmse(self.f, self.Z)
+            rmse = model.Yrmse(self.f, self.Y)
 
         return model, rmse, None
