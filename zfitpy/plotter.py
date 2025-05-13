@@ -8,10 +8,14 @@ from numpy import degrees, angle, pi, linspace
 
 class Plotter:
 
-    def __init__(self, admittance=False, logf=False):
+    def __init__(self, admittance=False, logf=False, axes=None):
 
         self.admittance = admittance
         self.logf = logf
+
+        if axes is None:
+            fig, axes = subplots(1)
+        self.axes = axes
 
     def _plot(self, axes):
 
@@ -22,11 +26,11 @@ class Plotter:
 
         return plot
 
-    def set_title(self, axes, title=None, model=None, sfmax=2):
+    def set_title(self, title=None, model=None, sfmax=2):
 
         if title is None:
             if model is None:
-                return axes
+                return
             title = str(model)
 
         if model is not None:
@@ -39,18 +43,17 @@ class Plotter:
 
         title = title.replace('_', '\_')
 
-        axes.set_title(title)
-        return axes
+        self.axes.set_title(title)
 
-    def Y_error(self, data, model, axes=None, title=None, percent=False):
+    def Y_error(self, data, model, title=None, percent=False):
 
-        return self.error(data, model, axes, title, percent, admittance=True)
+        return self.error(data, model, title, percent, admittance=True)
 
-    def Z_error(self, data, model, axes=None, title=None, percent=False):
+    def Z_error(self, data, model, title=None, percent=False):
 
-        return self.error(data, model, axes, title, percent, admittance=False)
+        return self.error(data, model, title, percent, admittance=False)
 
-    def error(self, data, model, axes=None, title=None, percent=False,
+    def error(self, data, model, title=None, percent=False,
               admittance=None):
 
         if admittance is None:
@@ -69,8 +72,7 @@ class Plotter:
             mZ = 1 / mZ
             dZ = 1 / dZ
 
-        if axes is None:
-            fig, axes = subplots(1)
+        axes = self.axes
 
         plot = self._plot(axes)
 
@@ -90,32 +92,32 @@ class Plotter:
             axes.set_ylabel(f'{label} error ({units})')
         axes.grid(True)
 
-        self.set_title(axes, title, model)
+        self.set_title(title, model)
         axes.legend()
         return axes
 
-    def Y_data(self, data, axes=None, title=None, magphase=False):
+    def Y_data(self, data, title=None, magphase=False):
 
-        return self.data(data, axes, title, magphase, True)
+        return self.data(data, title, magphase, True)
 
-    def Z_data(self, data, axes=None, title=None, magphase=False):
+    def Z_data(self, data, title=None, magphase=False):
 
-        return self.data(data, axes, title, magphase, False)
+        return self.data(data, title, magphase, False)
 
-    def data(self, data, axes=None, title=None, magphase=False,
+    def data(self, data, title=None, magphase=False,
              admittance=None):
 
-        return self.fit(data, None, axes, title, magphase, admittance)
+        return self.fit(data, None, title, magphase, admittance)
 
-    def Y_fit(self, data, model=None, axes=None, title=None, magphase=False):
+    def Y_fit(self, data, model=None, title=None, magphase=False):
 
-        return self.fit(data, model, axes, title, magphase, True)
+        return self.fit(data, model, title, magphase, True)
 
-    def Z_fit(self, data, model=None, axes=None, title=None, magphase=False):
+    def Z_fit(self, data, model=None, title=None, magphase=False):
 
-        return self.fit(data, model, axes, title, magphase, False)
+        return self.fit(data, model, title, magphase, False)
 
-    def fit(self, data, model=None, axes=None, title=None, magphase=False,
+    def fit(self, data, model=None, title=None, magphase=False,
             admittance=None):
 
         if admittance is None:
@@ -139,8 +141,7 @@ class Plotter:
         if admittance:
             dZ = 1 / dZ
 
-        if axes is None:
-            fig, axes = subplots(1)
+        axes = self.axes
 
         plot = self._plot(axes)
 
@@ -173,21 +174,21 @@ class Plotter:
         axes.set_ylabel(f'{label} ({units})')
         axes.grid(True)
 
-        self.set_title(axes, title, model)
+        self.set_title(title, model)
         axes.legend()
         return axes
 
-    def Y_nyquist(self, data, model=None, axes=None, title=None,
+    def Y_nyquist(self, data, model=None, title=None,
                   fmin=None, fmax=None):
 
-        return self.nyquist(data, model, axes, title, True, fmin, fmax)
+        return self.nyquist(data, model, title, True, fmin, fmax)
 
-    def Z_nyquist(self, data, model=None, axes=None, title=None,
+    def Z_nyquist(self, data, model=None, title=None,
                   fmin=None, fmax=None):
 
-        return self.nyquist(data, model, axes, title, False, fmin, fmax)
+        return self.nyquist(data, model, title, False, fmin, fmax)
 
-    def nyquist(self, data, model=None, axes=None, title=None,
+    def nyquist(self, data, model=None, title=None,
                 admittance=None, fmin=None, fmax=None):
 
         if admittance is None:
@@ -218,8 +219,7 @@ class Plotter:
         else:
             mZ = None
 
-        if axes is None:
-            fig, axes = subplots(1)
+        axes = self.axes
 
         axes.plot(dZ[mf].real, dZ[mf].imag, label=data.latex_name + ' data')
         if mZ is not None:
@@ -230,19 +230,19 @@ class Plotter:
         axes.set_ylabel(f'{label} imag ({units})')
         axes.grid(True)
 
-        self.set_title(axes, title, model)
+        self.set_title(title, model)
         axes.legend()
         return axes
 
-    def Y_difference(self, data1, data2, axes=None, title=None):
+    def Y_difference(self, data1, data2, title=None):
 
-        return self.difference(data1, data2, axes, title, True)
+        return self.difference(data1, data2, title, True)
 
-    def Z_difference(self, data1, data2, axes=None, title=None):
+    def Z_difference(self, data1, data2, title=None):
 
-        return self.difference(data1, data2, axes, title, False)
+        return self.difference(data1, data2, title, False)
 
-    def difference(self, data1, data2, axes=None, title=None, admittance=None):
+    def difference(self, data1, data2, title=None, admittance=None):
 
         if admittance is None:
             admittance = self.admittance
@@ -260,8 +260,7 @@ class Plotter:
             dZ1 = 1 / dZ1
             dZ2 = 1 / dZ2
 
-        if axes is None:
-            fig, axes = subplots(1)
+        axes = self.axes
 
         if not (data1.f == data2.f).all():
             raise ValueError('Mismatched frequencies')
@@ -277,11 +276,11 @@ class Plotter:
         axes.set_ylabel(f'{label} error ({units})')
         axes.grid(True)
 
-        self.set_title(axes, title, model=None)
+        self.set_title(title, model=None)
         axes.legend()
         return axes
 
-    def LsRs_fit(self, data, model=None, axes=None, title=None,
+    def LsRs_fit(self, data, model=None, title=None,
                  doLs=True, doRs=True):
 
         if model is not None:
@@ -289,8 +288,7 @@ class Plotter:
         else:
             Z = None
 
-        if axes is None:
-            fig, axes = subplots(1)
+        axes = self.axes
 
         if doLs and doRs:
             Lsaxes = axes
@@ -338,7 +336,7 @@ class Plotter:
         axes.set_xlabel('Frequency (Hz)')
         axes.grid(True)
 
-        self.set_title(axes, title, model)
+        self.set_title(title, model)
 
         if Lsaxes is not None:
             Lsaxes.legend()
@@ -350,15 +348,15 @@ class Plotter:
     def Y_slice(self, model=None, data=None, paramname=None, axes=None,
                 title=None):
 
-        return self.slice(model, data, paramname, axes, title, True)
+        return self.slice(model, data, paramname, title, True)
 
     def Z_slice(self, model=None, data=None, paramname=None, axes=None,
                 title=None):
 
-        return self.slice(model, data, paramname, axes, title, False)
+        return self.slice(model, data, paramname, title, False)
 
     def slice(self, model=None, data=None, paramname=None,
-              axes=None, title=None, admittance=None):
+              title=None, admittance=None):
 
         if paramname not in model.paramnames:
             s = ', '.join(model.paramnames)
@@ -397,8 +395,7 @@ class Plotter:
                 model1 = Model(*params)
                 rmse[m] = model1.Zrmse(data.f, data.Z)
 
-        if axes is None:
-            fig, axes = subplots(1)
+        axes = self.axes
 
         axes.plot(x, rmse)
         axes.set_xlabel('$' + paramname + '$')
@@ -406,5 +403,5 @@ class Plotter:
 
         axes.grid(True)
 
-        self.set_title(axes, title, model)
+        self.set_title(title, model)
         return axes

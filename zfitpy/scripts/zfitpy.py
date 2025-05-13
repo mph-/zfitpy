@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""zfitpy V0.4.0
+"""zfitpy V0.5.0
 Copyright (c) 2021--2025 Michael P. Hayes, UC ECE, NZ
 
 Usage:
@@ -14,7 +14,7 @@ zfitpy --net net --laplace
 
 from __future__ import print_function
 from matplotlib.pyplot import show, savefig, style
-from argparse import ArgumentParser
+from argparse import ArgumentParser, FileType
 from zfitpy.model import models, modelmake
 from zfitpy import ZFitter
 from zfitpy import Plotter
@@ -61,6 +61,86 @@ def model_make(args):
     return Model
 
 
+def doit(filename, plotter, args):
+
+    data = impedancedata(filename,
+                         fmin=args.fmin, fmax=args.fmax,
+                         conjugate=args.conjugate,
+                         admittance=args.data_admittance,
+                         magphase=args.data_magphase)
+
+    if args.fitfmin is not None or args.fitfmax is not None:
+
+        if args.fitfmin is None:
+            args.fitfmin = args.fmin
+        if args.fitfmax is None:
+            args.fitfmax = args.fmax
+
+        fitdata = impedancedata(filename,
+                                fmin=args.fitfmin, fmax=args.fitfmax,
+                                conjugate=args.conjugate,
+                                admittance=args.data_admittance,
+                                magphase=args.data_magphase)
+    else:
+        fitdata = data
+
+
+    if args.Zoffset != 0:
+        data.Z += args.Zoffset
+
+    if False and args.ranges is None:
+        raise ValueError('Search ranges not specified')
+
+    if args.ranges is None:
+        fitmodel = None
+    else:
+
+        ranges = args.ranges
+        if ranges.endswith('.ranges'):
+            ranges = open(ranges).read()
+
+        Model = model_make(args)
+        zfitter = ZFitter(Model, fitdata.f, fitdata.Z)
+        fitmodel = zfitter(ranges=ranges, Ns=args.steps,
+                           method=args.method, verbose=args.verbose,
+                           finish=args.finish)
+        if args.error:
+            print('error=%.3e' % fitmodel.error)
+        if args.defs:
+            print(fitmodel.defs(args.sigfigs))
+        if args.values:
+            print(fitmodel)
+        if not (args.error or args.defs or args.values):
+            print('%s, error=%.3e' % (fitmodel, fitmodel.error))
+
+    if args.plot_error and fitmodel:
+        plotter.error(data, fitmodel, title=args.title, percent=args.percent)
+
+    if args.plot_fit:
+        if args.nyquist:
+            plotter.nyquist(data, fitmodel, title=args.title,
+                            fmin=args.fmin, fmax=args.fmax)
+        elif args.Ls or args.Rs:
+            plotter.LsRs_fit(data, fitmodel, title=args.title,
+                             doLs=args.Ls, doRs=args.Rs)
+        else:
+            plotter.fit(data, fitmodel, title=args.title,
+                        magphase=args.magphase)
+
+    if args.plot_data:
+        if args.nyquist:
+            plotter.nyquist(data, None, title=args.title,
+                            fmin=args.fmin, fmax=args.fmax)
+        elif args.Ls or args.Rs:
+            plotter.LsRs_fit(data, None, title=args.title,
+                             doLs=args.Ls, doRs=args.Rs)
+        else:
+            plotter.data(data, title=args.title, magphase=args.magphase)
+
+    if args.slice is not None:
+        plotter.slice(fitmodel, data, args.slice, title=args.title)
+
+
 def main():
 
     parser = ArgumentParser(description='Draw schematic of impedance model.')
@@ -69,7 +149,7 @@ def main():
     parser.add_argument('--modelname', type=str, help='model name')
     parser.add_argument('--net', type=str,
                         help="specify network, e.g., R('R1') + L('L1')")
-    parser.add_argument('--input_filename', type=str, help='input filename')
+    parser.add_argument('--input_filename', nargs='+')
     parser.add_argument('--output_filename', type=str, help='output filename')
     parser.add_argument(
         '--ranges', type=str, help="specify search ranges, e.g.,  {'R1':(0,1),'L1':(10,20)}")
@@ -167,86 +247,10 @@ def main():
             show()
         return 0
 
-    if args.input_filename is None:
-        raise ValueError('Impedance data not specified')
-
-    data = impedancedata(args.input_filename,
-                         fmin=args.fmin, fmax=args.fmax,
-                         conjugate=args.conjugate,
-                         admittance=args.data_admittance,
-                         magphase=args.data_magphase)
-
-    if args.fitfmin is not None or args.fitfmax is not None:
-
-        if args.fitfmin is None:
-            args.fitfmin = args.fmin
-        if args.fitfmax is None:
-            args.fitfmax = args.fmax
-
-        fitdata = impedancedata(args.input_filename,
-                                fmin=args.fitfmin, fmax=args.fitfmax,
-                                conjugate=args.conjugate,
-                                admittance=args.data_admittance,
-                                magphase=args.data_magphase)
-    else:
-        fitdata = data
-
-
-    if args.Zoffset != 0:
-        data.Z += args.Zoffset
-
-    if False and args.ranges is None:
-        raise ValueError('Search ranges not specified')
-
-    if args.ranges is None:
-        fitmodel = None
-    else:
-
-        ranges = args.ranges
-        if ranges.endswith('.ranges'):
-            ranges = open(ranges).read()
-
-        Model = model_make(args)
-        zfitter = ZFitter(Model, fitdata.f, fitdata.Z)
-        fitmodel = zfitter(ranges=ranges, Ns=args.steps,
-                           method=args.method, verbose=args.verbose,
-                           finish=args.finish)
-        if args.error:
-            print('error=%.3e' % fitmodel.error)
-        if args.defs:
-            print(fitmodel.defs(args.sigfigs))
-        if args.values:
-            print(fitmodel)
-        if not (args.error or args.defs or args.values):
-            print('%s, error=%.3e' % (fitmodel, fitmodel.error))
-
     plotter = Plotter(args.admittance, args.logf)
-    if args.plot_error and fitmodel:
-        plotter.error(data, fitmodel, title=args.title, percent=args.percent)
 
-    if args.plot_fit:
-        if args.nyquist:
-            plotter.nyquist(data, fitmodel, title=args.title,
-                            fmin=args.fmin, fmax=args.fmax)
-        elif args.Ls or args.Rs:
-            plotter.LsRs_fit(data, fitmodel, title=args.title,
-                             doLs=args.Ls, doRs=args.Rs)
-        else:
-            plotter.fit(data, fitmodel, title=args.title,
-                        magphase=args.magphase)
-
-    if args.plot_data:
-        if args.nyquist:
-            plotter.nyquist(data, None, title=args.title,
-                            fmin=args.fmin, fmax=args.fmax)
-        elif args.Ls or args.Rs:
-            plotter.LsRs_fit(data, None, title=args.title,
-                             doLs=args.Ls, doRs=args.Rs)
-        else:
-            plotter.data(data, title=args.title, magphase=args.magphase)
-
-    if args.slice is not None:
-        plotter.slice(fitmodel, data, args.slice, title=args.title)
+    for filename in args.input_filename:
+        doit(filename, plotter, args)
 
     if args.output_filename is not None:
         savefig(args.output_filename, bbox_inches='tight')
