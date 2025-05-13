@@ -50,7 +50,7 @@ class ZFitter(object):
             fitter = ZFitterCurve(self._model, f, Z)
         else:
             raise ValueError(
-                'Unknown method %s: needs to be brute, trf, dogbox' % method)
+                'Unknown method %s: needs to be brute, direct, dogbox, trf' % method)
 
         model, rmse, cov = fitter.optimize(
             ranges, opt, method=method, **kwargs)

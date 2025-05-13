@@ -104,7 +104,8 @@ def doit(filename, plotter, args):
 
         Model = model_make(args)
         zfitter = ZFitter(Model, fitdata.f, fitdata.Z)
-        fitmodel = zfitter(ranges=ranges, Ns=args.steps,
+        opt = 'Y' if args.admittance else 'Z'
+        fitmodel = zfitter(ranges=ranges, Ns=args.steps, opt=opt,
                            method=args.method, verbose=args.verbose,
                            finish=args.finish)
         if args.error:
