@@ -26,7 +26,7 @@ class ImpedanceData(object):
         self.Z = Z
         self.filename = basename(filename)
         self.name, ext = splitext(self.filename)
-        self.latex_name = self.name.replace('_', '\_')
+        self.latex_name = '$\\mathrm{' + self.name.replace('_', '\_') + '}$'
 
     @property
     def Y(self):
