@@ -4,11 +4,13 @@ Copyright (c) 2021--2025 Michael P. Hayes, UC ECE, NZ
 
 Usage:
 
-Here are some examples.
+Here are some examples:
 
 zfitpy --net net --draw
 zfitpy --input data.csv --plot --output plotfilename
 zfitpy --plot-fit --net net --ranges ranges --input data.csv --plot-error
+zfitpy --plot-data --nyquist --admittance --input data.csv
+zfitpy --plot-data --nyquist --admittance --input data1.csv data2.csv
 zfitpy --net net --laplace
 """
 
@@ -117,6 +119,10 @@ def doit(filename, plotter, args):
         plotter.error(data, fitmodel, title=args.title, percent=args.percent)
 
     if args.plot_fit:
+
+        if fitmodel is None:
+            print('No model to plot')
+
         if args.nyquist:
             plotter.nyquist(data, fitmodel, title=args.title,
                             fmin=args.fmin, fmax=args.fmax)
