@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""zfitpy V0.5.1
+"""zfitpy V0.5.2
 Copyright (c) 2021--2025 Michael P. Hayes, UC ECE, NZ
 
 Usage:
@@ -128,6 +128,9 @@ def doit(filename, plotter, args):
         if args.nyquist:
             plotter.nyquist(data, fitmodel, title=args.title,
                             fmin=args.fmin, fmax=args.fmax)
+        elif args.nichols:
+            plotter.nichols(data, fitmodel, title=args.title,
+                            fmin=args.fmin, fmax=args.fmax)
         elif args.Ls or args.Rs:
             plotter.LsRs_fit(data, fitmodel, title=args.title,
                              doLs=args.Ls, doRs=args.Rs)
@@ -138,6 +141,9 @@ def doit(filename, plotter, args):
     if args.plot_data:
         if args.nyquist:
             plotter.nyquist(data, None, title=args.title,
+                            fmin=args.fmin, fmax=args.fmax)
+        elif args.nichols:
+            plotter.nichols(data, None, title=args.title,
                             fmin=args.fmin, fmax=args.fmax)
         elif args.Ls or args.Rs:
             plotter.LsRs_fit(data, None, title=args.title,
@@ -168,7 +174,9 @@ def main():
     parser.add_argument('--show', action='store_true',
                         default=False, help='show plot')
     parser.add_argument('--nyquist', action='store_true',
-                        default=False, help='use Nyquist plot')
+                        default=False, help='show Nyquist plot')
+    parser.add_argument('--nichols', action='store_true',
+                        default=False, help='show Nichols plot')
     parser.add_argument('--plot-admittance', action='store_true',
                         default=False,
                         help='plot admittance rather than impedance')

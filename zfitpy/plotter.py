@@ -3,7 +3,7 @@
 Copyright 2021--2025 Michael Hayes, UCECE"""
 
 from matplotlib.pyplot import subplots
-from numpy import degrees, angle, pi, linspace
+from numpy import degrees, angle, pi, linspace, log
 
 
 class Plotter:
@@ -228,6 +228,63 @@ class Plotter:
 
         axes.set_xlabel(f'{label} real ({units})')
         axes.set_ylabel(f'{label} imag ({units})')
+        axes.grid(True)
+
+        self.set_title(title, model)
+        axes.legend()
+        return axes
+
+    def Y_nichols(self, data, model=None, title=None,
+                  fmin=None, fmax=None):
+
+        return self.nichols(data, model, title, True, fmin, fmax)
+
+    def Z_nichols(self, data, model=None, title=None,
+                  fmin=None, fmax=None):
+
+        return self.nichols(data, model, title, False, fmin, fmax)
+
+    def nichols(self, data, model=None, title=None,
+                admittance=None, fmin=None, fmax=None):
+
+        if admittance is None:
+            admittance = self.admittance
+
+        if admittance:
+            label = 'Admittance'
+            units = 'S'
+        else:
+            label = 'Impedance'
+            units = 'ohms'
+
+        dZ = data.Z
+        if admittance:
+            dZ = 1 / dZ
+
+        f = data.f
+        if fmin is None:
+            fmin = f[0]
+        if fmax is None:
+            fmax = f[-1]
+        mf = (f >= fmin) & (f <= fmax)
+
+        if model is not None:
+            mZ = model.Z(f)
+            if admittance:
+                mZ = 1 / mZ
+        else:
+            mZ = None
+
+        axes = self.axes
+
+        axes.plot(angle(dZ[mf]), log(abs(dZ[mf])),
+                      label=data.latex_name + ' data')
+        if mZ is not None:
+            axes.plot(angle(mZ[mf]), log(abs(mZ[mf])),
+                      label=data.latex_name + ' model')
+
+        axes.set_xlabel('Phase (rad)')
+        axes.set_ylabel(f'log {label}')
         axes.grid(True)
 
         self.set_title(title, model)
