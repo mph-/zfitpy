@@ -284,7 +284,7 @@ class Plotter:
                       label=data.latex_name + ' model')
 
         axes.set_xlabel('Phase (rad)')
-        axes.set_ylabel(f'log {label}')
+        axes.set_ylabel(f'log {label} (log {units})')
         axes.grid(True)
 
         self.set_title(title, model)
