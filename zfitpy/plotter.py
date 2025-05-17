@@ -78,7 +78,10 @@ class Plotter:
         return self.error(data, model, percent, admittance=False)
 
     def error(self, data, model, percent=False,
-              admittance=None):
+              admittance=None, magphase=False):
+
+        if magphase:
+            raise ValueError('TODO: error magphase')
 
         if admittance is None:
             admittance = self.admittance

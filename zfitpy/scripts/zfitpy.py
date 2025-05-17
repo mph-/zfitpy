@@ -125,6 +125,9 @@ def doit(filename, label, plotter, plot_type, plot_format, args):
         if not (args.error or args.defs or args.values):
             print('%s, error=%.3e' % (fitmodel, fitmodel.error))
 
+    if plot_format is None:
+        plot_format = 'fit' if fitmodel else 'data'
+
     if not fitmodel and plot_format in ('error', 'fit', 'model'):
         raise ValueError('Model not specified for plot')
 
@@ -152,9 +155,12 @@ def doit(filename, label, plotter, plot_type, plot_format, args):
     elif plot_type == 'nichols':
         plotter.nichols(data, fitmodel, fmin=args.fmin,
                         fmax=args.fmax)
-    elif plot_type == 'LsRs':
-        plotter.LsRs_fit(data, fitmodel, doLs=args.Ls,
-                         doRs=args.Rs)
+    elif plot_type == 'Ls-Rs':
+        plotter.LsRs_fit(data, fitmodel, doLs=True, doRs=True)
+    elif plot_type == 'Ls':
+        plotter.LsRs_fit(data, fitmodel, doLs=True, doRs=False)
+    elif plot_type == 'Rs':
+        plotter.LsRs_fit(data, fitmodel, doLs=False, doRs=True)
     elif plot_type == 'slice':
         plotter.slice(fitmodel, data, args.slice)
     else:
@@ -180,15 +186,11 @@ def main():
                         help='drawing layout: vertical, horizontal, ladder')
     parser.add_argument('--show', action='store_true',
                         default=False, help='show plot')
-    parser.add_argument('--nyquist', action='store_true',
-                        default=False, help='show Nyquist plot')
-    parser.add_argument('--nichols', action='store_true',
-                        default=False, help='show Nichols plot')
     parser.add_argument('--plot-admittance', action='store_true',
                         default=False,
                         help='plot admittance rather than impedance')
-    parser.add_argument('--plot-type', type=str, default=None,
-                        help='specify plot type: real-imag, mag-phase, Ls-Rs, nyquist, nichols')
+    parser.add_argument('--plot', type=str, default=None,
+                        help='specify plot type: real-imag, mag-phase, Ls-Rs, nyquist, nichols, slice')
     parser.add_argument('--plot-format', type=str, default=None,
                         help='specify plot format: data, model, fit, error')
     parser.add_argument('--fit-admittance', action='store_true',
@@ -234,10 +236,6 @@ def main():
     parser.add_argument('--style', type=str, help='matplotlib style filename')
     parser.add_argument('--laplace', action='store_true', default=False,
                         help='print impedance in Laplace domain')
-    parser.add_argument('--Ls', action='store_true', default=False,
-                        help='plot series inductance')
-    parser.add_argument('--Rs', action='store_true', default=False,
-                        help='plot series resistance')
     parser.add_argument('--Zoffset', type=float, default=0,
                         help='impedance offset to add')
     parser.add_argument('--sigfigs', type=int, default=10,
@@ -275,24 +273,7 @@ def main():
             show()
         return 0
 
-    plot_type = args.plot_type
-    if args.nyquist:
-        if plot_type is not None:
-            raise ValueError(f'Conflicting plot types: {plot_type} and nyquist')
-        plot_type = 'nyquist'
-    if args.nichols:
-        if plot_type is not None:
-            raise ValueError(f'Conflicting plot types: {plot_type} and nichols')
-        plot_type = 'nichols'
-    if args.Ls:
-        if plot_type is not None:
-            raise ValueError(f'Conflicting plot types: {plot_type} and Ls')
-        plot_type = 'LsRs'
-    if args.Rs:
-        if plot_type is not None:
-            raise ValueError(f'Conflicting plot types: {plot_type} and Rs')
-        plot_type = 'LsRs'
-
+    plot_type = args.plot
     if plot_type is None:
         plot_type = 'real-imag'
 
@@ -309,9 +290,6 @@ def main():
         if plot_format is not None:
             raise ValueError(f'Conflicting plot formats: {plot_format} and data')
         plot_format = 'data'
-
-    if plot_format is None:
-        plot_format = 'fit'
 
     plotter = Plotter(args.plot_admittance, args.logf)
 
