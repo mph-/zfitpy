@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""zfitpy V0.5.2
+"""zfitpy V0.6.0
 Copyright (c) 2021--2025 Michael P. Hayes, UC ECE, NZ
 
 Usage:
@@ -24,6 +24,10 @@ from zfitpy import Plotter
 from zfitpy import impedancedata
 import sys
 
+
+# Plot types: real-imag, mag-phase, Ls-Rs, Nyquist, Nichols
+# Plot formats: data, model, fit, error
+# Plot data: impedance, admittance
 
 def zfitpy_exception(type, value, tb):
     if hasattr(sys, 'ps1') or not sys.stderr.isatty():
@@ -64,7 +68,12 @@ def model_make(args):
     return Model
 
 
-def doit(filename, plotter, args):
+def doit(filename, label, plotter, plot_type, plot_format, args):
+
+    # TODO: tidy
+    plotter.filename = filename
+    plotter.label = label
+    plotter.title = args.title
 
     data = impedancedata(filename,
                          fmin=args.fmin, fmax=args.fmax,
@@ -86,7 +95,6 @@ def doit(filename, plotter, args):
                                 magphase=args.data_magphase)
     else:
         fitdata = data
-
 
     if args.Zoffset != 0:
         data.Z += args.Zoffset
@@ -117,42 +125,40 @@ def doit(filename, plotter, args):
         if not (args.error or args.defs or args.values):
             print('%s, error=%.3e' % (fitmodel, fitmodel.error))
 
-    if args.plot_error and fitmodel:
-        plotter.error(data, fitmodel, title=args.title, percent=args.percent)
+    if not fitmodel and plot_format in ('error', 'fit', 'model'):
+        raise ValueError('Model not specified for plot')
 
-    if args.plot_fit:
+    if plot_format not in ('data', 'model', 'fit', 'error'):
+        raise ValueError(f'Unknown plot_format {plot_format}')
 
-        if fitmodel is None:
-            print('No model to plot for ' + filename)
+    if plot_type in ('real-imag', 'mag-phase'):
+        if plot_format == 'error':
+            plotter.error(data, fitmodel,
+                          percent=args.percent,
+                          magphase=plot_type=='mag-phase')
+        elif plot_format == 'model':
+            plotter.fit(None, fitmodel,
+                        magphase=plot_type=='mag-phase')
+        elif plot_format == 'fit':
+            plotter.fit(data, fitmodel,
+                        magphase=plot_type=='mag-phase')
+        elif plot_format == 'data':
+            plotter.fit(data, None,
+                        magphase=plot_type=='mag-phase')
 
-        if args.nyquist:
-            plotter.nyquist(data, fitmodel, title=args.title,
-                            fmin=args.fmin, fmax=args.fmax)
-        elif args.nichols:
-            plotter.nichols(data, fitmodel, title=args.title,
-                            fmin=args.fmin, fmax=args.fmax)
-        elif args.Ls or args.Rs:
-            plotter.LsRs_fit(data, fitmodel, title=args.title,
-                             doLs=args.Ls, doRs=args.Rs)
-        else:
-            plotter.fit(data, fitmodel, title=args.title,
-                        magphase=args.magphase)
-
-    if args.plot_data:
-        if args.nyquist:
-            plotter.nyquist(data, None, title=args.title,
-                            fmin=args.fmin, fmax=args.fmax)
-        elif args.nichols:
-            plotter.nichols(data, None, title=args.title,
-                            fmin=args.fmin, fmax=args.fmax)
-        elif args.Ls or args.Rs:
-            plotter.LsRs_fit(data, None, title=args.title,
-                             doLs=args.Ls, doRs=args.Rs)
-        else:
-            plotter.data(data, title=args.title, magphase=args.magphase)
-
-    if args.slice is not None:
-        plotter.slice(fitmodel, data, args.slice, title=args.title)
+    elif plot_type == 'nyquist':
+        plotter.nyquist(data, fitmodel, fmin=args.fmin,
+                        fmax=args.fmax)
+    elif plot_type == 'nichols':
+        plotter.nichols(data, fitmodel, fmin=args.fmin,
+                        fmax=args.fmax)
+    elif plot_type == 'LsRs':
+        plotter.LsRs_fit(data, fitmodel, doLs=args.Ls,
+                         doRs=args.Rs)
+    elif plot_type == 'slice':
+        plotter.slice(fitmodel, data, args.slice)
+    else:
+        raise ValueError(f'Unknown plot_type {plot_type}')
 
 
 def main():
@@ -167,6 +173,7 @@ def main():
     parser.add_argument('--output_filename', type=str, help='output filename')
     parser.add_argument(
         '--ranges', type=str, help="specify search ranges, e.g.,  {'R1':(0,1),'L1':(10,20)}")
+    parser.add_argument('--label', nargs='+')
     parser.add_argument('--draw', action='store_true',
                         default=False, help='draw network')
     parser.add_argument('--layout', type=str, default='horizontal',
@@ -180,6 +187,10 @@ def main():
     parser.add_argument('--plot-admittance', action='store_true',
                         default=False,
                         help='plot admittance rather than impedance')
+    parser.add_argument('--plot-type', type=str, default=None,
+                        help='specify plot type: real-imag, mag-phase, Ls-Rs, nyquist, nichols')
+    parser.add_argument('--plot-format', type=str, default=None,
+                        help='specify plot format: data, model, fit, error')
     parser.add_argument('--fit-admittance', action='store_true',
                         default=False,
                         help='fit admittance rather than impedance')
@@ -240,8 +251,6 @@ def main():
     parser.add_argument('--percent', action='store_true',
                         default=False,
                         help='show fitting error as percentage')
-    parser.add_argument('--slice', type=str, default=None,
-                        help='plot objective function for specfied param')
 
     args = parser.parse_args()
 
@@ -266,10 +275,56 @@ def main():
             show()
         return 0
 
+    plot_type = args.plot_type
+    if args.nyquist:
+        if plot_type is not None:
+            raise ValueError(f'Conflicting plot types: {plot_type} and nyquist')
+        plot_type = 'nyquist'
+    if args.nichols:
+        if plot_type is not None:
+            raise ValueError(f'Conflicting plot types: {plot_type} and nichols')
+        plot_type = 'nichols'
+    if args.Ls:
+        if plot_type is not None:
+            raise ValueError(f'Conflicting plot types: {plot_type} and Ls')
+        plot_type = 'LsRs'
+    if args.Rs:
+        if plot_type is not None:
+            raise ValueError(f'Conflicting plot types: {plot_type} and Rs')
+        plot_type = 'LsRs'
+
+    if plot_type is None:
+        plot_type = 'real-imag'
+
+    plot_format = args.plot_format
+    if args.plot_fit:
+        if plot_format is not None:
+            raise ValueError(f'Conflicting plot formats: {plot_format} and fit')
+        plot_format = 'fit'
+    if args.plot_error:
+        if plot_format is not None:
+            raise ValueError(f'Conflicting plot formats: {plot_format} and error')
+        plot_format = 'error'
+    if args.plot_data:
+        if plot_format is not None:
+            raise ValueError(f'Conflicting plot formats: {plot_format} and data')
+        plot_format = 'data'
+
+    if plot_format is None:
+        plot_format = 'fit'
+
     plotter = Plotter(args.plot_admittance, args.logf)
 
-    for filename in args.input_filename:
-        doit(filename, plotter, args)
+    if args.label is None:
+        args.label = []
+        for filename in args.input_filename:
+            args.label.append(r'%filename')
+
+    if len(args.label) != len(args.input_filename):
+        raise ValueError('Number of labels is different from number of filenames')
+
+    for filename, label in zip(args.input_filename, args.label):
+        doit(filename, label, plotter, plot_type, plot_format, args)
 
     if args.output_filename is not None:
         savefig(args.output_filename, bbox_inches='tight')
