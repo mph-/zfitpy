@@ -250,8 +250,7 @@ class Plotter:
 
         axes.plot(dZ[mf].real, dZ[mf].imag, label=self.make_label('data'))
         if mZ is not None:
-            axes.plot(mZ[mf].real, mZ[mf].imag,
-                      label=self.make_label('model'))
+            axes.plot(mZ[mf].real, mZ[mf].imag, label=self.make_label('model'))
 
         axes.set_xlabel(f'{ylabel} real ({units})')
         axes.set_ylabel(f'{ylabel} imag ({units})')
@@ -364,8 +363,8 @@ class Plotter:
         axes.legend()
         return axes
 
-    def LsRs_fit(self, data, model=None, title=None,
-                 doLs=True, doRs=True):
+    def LsRs_fit(self, data, model=None, title=None, doLs=True,
+                 doRs=True):
 
         if model is not None:
             Z = model.Z(data.f)
@@ -389,9 +388,11 @@ class Plotter:
             Rsaxes = axes
             Lsaxes = None
 
+
         if Rsaxes is not None:
             Rs = data.Z.real
-            Rsaxes.plot(data.f, Rs, '--', label=self.make_label('data Rs'))
+            plot = self._plot(Rsaxes)
+            plot(data.f, Rs, '--', label=self.make_label('data Rs'))
             Rsaxes.set_ylabel('Resistance (ohm)')
             if Lsaxes is not None:
                 # Dummy plot to advance colour.
@@ -401,7 +402,8 @@ class Plotter:
         if Z is not None:
             if Rsaxes is not None:
                 Rs = Z.real
-                Rsaxes.plot(data.f, Rs, '--', label=self.make_label('model Rs'))
+                plot = self._plot(Rsaxes)
+                plot(data.f, Rs, '--', label=self.make_label('model Rs'))
             if Lsaxes is not None:
                 # Dummy plot to advance colour.
                 # Lsaxes.plot([], [])
@@ -409,13 +411,15 @@ class Plotter:
 
         if Lsaxes is not None:
             Ls = data.Z.imag / (2 * pi * data.f)
-            Lsaxes.plot(data.f, Ls * 1e3, label=self.make_label('data Ls'))
+            plot = self._plot(Lsaxes)
+            plot(data.f, Ls * 1e3, label=self.make_label('data Ls'))
             Lsaxes.set_ylabel('Inductance (mH)')
 
         if Z is not None:
             if Lsaxes is not None:
                 Ls = Z.imag / (2 * pi * data.f)
-                Lsaxes.plot(data.f, Ls * 1e3, label=self.make_label('model Ls'))
+                plot = self._plot(Lsaxes)
+                plot(data.f, Ls * 1e3, label=self.make_label('model Ls'))
 
         axes.set_xlabel('Frequency (Hz)')
         axes.grid(True)
@@ -428,6 +432,73 @@ class Plotter:
             Rsaxes.legend()
         return axes
 
+    def CpGp_fit(self, data, model=None, title=None, doCp=True,
+                 doGp=True):
+
+        if model is not None:
+            Y = model.Y(data.f)
+        else:
+            Y = None
+
+        axes = self.axes
+
+        if doCp and doGp:
+            Cpaxes = axes
+
+            # Handle multiple calls with specified axes
+            if not hasattr(axes, '_twinx'):
+                axes._twinx = axes.twinx()
+
+            Gpaxes = axes._twinx
+        elif doCp:
+            Cpaxes = axes
+            Gpaxes = None
+        else:
+            Gpaxes = axes
+            Cpaxes = None
+
+        if Gpaxes is not None:
+            Gp = data.Y.real
+            plot = self._plot(Gpaxes)
+            plot(data.f, Gp, '--', label=self.make_label('data Gp'))
+            Gpaxes.set_ylabel('Conductance (S)')
+            if Cpaxes is not None:
+                # Dummy plot to advance colour.
+                # Cpaxes.plot([], [])
+                pass
+
+        if Y is not None:
+            if Gpaxes is not None:
+                Gp = Y.real
+                plot = self._plot(Gpaxes)
+                plot(data.f, Gp, '--', label=self.make_label('model Gp'))
+            if Cpaxes is not None:
+                # Dummy plot to advance colour.
+                # Cpaxes.plot([], [])
+                pass
+
+        if Cpaxes is not None:
+            Cp = data.Y.imag / (2 * pi * data.f)
+            plot = self._plot(Cpaxes)
+            plot(data.f, Cp * 1e6, label=self.make_label('data Cp'))
+            Cpaxes.set_ylabel('Capacitance (uF)')
+
+        if Y is not None:
+            if Cpaxes is not None:
+                Cp = Y.imag / (2 * pi * data.f)
+                plot = self._plot(Cpaxes)
+                plot(data.f, Cp * 1e3, label=self.make_label('model Cp'))
+
+        axes.set_xlabel('Frequency (Hz)')
+        axes.grid(True)
+
+        self.set_title(model)
+
+        if Cpaxes is not None:
+            Cpaxes.legend()
+        if Gpaxes is not None:
+            Gpaxes.legend()
+        return axes
 
     def Y_slice(self, model=None, data=None, paramname=None, axes=None,
                 title=None):

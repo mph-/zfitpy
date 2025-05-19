@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""zfitpy V0.6.0
+"""zfitpy V0.6.1
 Copyright (c) 2021--2025 Michael P. Hayes, UC ECE, NZ
 
 Usage:
@@ -25,7 +25,7 @@ from zfitpy import impedancedata
 import sys
 
 
-# Plot types: real-imag, mag-phase, Ls-Rs, Nyquist, Nichols
+# Plot types: real-imag, mag-phase, Ls-Rs, Cp-Gp, Nyquist, Nichols
 # Plot formats: data, model, fit, error
 # Plot data: impedance, admittance
 
@@ -161,6 +161,12 @@ def doit(filename, label, plotter, plot_type, plot_format, args):
         plotter.LsRs_fit(data, fitmodel, doLs=True, doRs=False)
     elif plot_type == 'Rs':
         plotter.LsRs_fit(data, fitmodel, doLs=False, doRs=True)
+    elif plot_type == 'Cp-Gp':
+        plotter.CpGp_fit(data, fitmodel, doCp=True, doGp=True)
+    elif plot_type == 'Cp':
+        plotter.CpGp_fit(data, fitmodel, doCp=True, doGp=False)
+    elif plot_type == 'Gp':
+        plotter.CpGp_fit(data, fitmodel, doCp=False, doGp=True)
     elif plot_type == 'slice':
         plotter.slice(fitmodel, data, args.slice)
     else:
@@ -190,7 +196,7 @@ def main():
                         default=False,
                         help='plot admittance rather than impedance')
     parser.add_argument('--plot', type=str, default=None,
-                        help='specify plot type: real-imag, mag-phase, Ls-Rs, nyquist, nichols, slice')
+                        help='specify plot type: real-imag, mag-phase, Ls-Rs, Cp-Gp, nyquist, nichols, slice')
     parser.add_argument('--plot-format', type=str, default=None,
                         help='specify plot format: data, model, fit, error')
     parser.add_argument('--fit-admittance', action='store_true',
