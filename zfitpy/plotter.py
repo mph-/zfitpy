@@ -173,7 +173,11 @@ class Plotter:
         plot = self._plot(axes)
 
         if magphase:
-            axes2 = axes.twinx()
+
+            if not hasattr(axes, '_twinx'):
+                axes._twinx = axes.twinx()
+
+            axes2 = axes._twinx
 
             plot2 = self._plot(axes2)
 
@@ -481,7 +485,7 @@ class Plotter:
             Cp = data.Y.imag / (2 * pi * data.f)
             plot = self._plot(Cpaxes)
             plot(data.f, Cp * 1e6, label=self.make_label('data Cp'))
-            Cpaxes.set_ylabel('Capacitance (uF)')
+            Cpaxes.set_ylabel('Capacitance ($\mu$F)')
 
         if Y is not None:
             if Cpaxes is not None:
