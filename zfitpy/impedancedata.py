@@ -27,6 +27,7 @@ class ImpedanceData(object):
         self.filename = basename(filename)
         self.name, ext = splitext(self.filename)
         self.latex_name = '$\\mathrm{' + self.name.replace('_', '\_') + '}$'
+        self.timestamp = None
 
     @property
     def Y(self):
@@ -40,6 +41,8 @@ class KeysightE4990AImpedanceData(ImpedanceData):
         lines = open(filename).readlines()
         if not lines[0].startswith('!Agilent Technologies,E4990A'):
             raise ValueError('Not Keysight E4990A')
+
+        self.timestamp = lines[1][7:]
 
         if lines[4].startswith('Frequency(Hz), |Z|(Ohm)-data, theta-z(deg)-data'):
             foo = loadtxt(filename, skiprows=5,
