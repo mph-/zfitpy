@@ -255,6 +255,8 @@ def main():
     parser.add_argument('--percent', action='store_true',
                         default=False,
                         help='show fitting error as percentage')
+    parser.add_argument('--scale', type=float, default=1,
+                        help='axis y-scale')
 
     args = parser.parse_args()
 
@@ -297,7 +299,10 @@ def main():
             raise ValueError(f'Conflicting plot formats: {plot_format} and data')
         plot_format = 'data'
 
-    plotter = Plotter(args.plot_admittance, args.logf)
+    plotter = Plotter(args.plot_admittance, args.logf, scale=args.scale)
+
+    if args.input_filename is None:
+        raise ValueError('No input filenames specified')
 
     if args.label is None:
         args.label = []
@@ -308,6 +313,8 @@ def main():
         raise ValueError('Number of labels is different from number of filenames')
 
     for filename, label in zip(args.input_filename, args.label):
+        if args.verbose:
+            print(filename)
         doit(filename, label, plotter, plot_type, plot_format, args)
 
     if args.output_filename is not None:

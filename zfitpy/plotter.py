@@ -9,7 +9,7 @@ from os.path import basename, splitext
 
 class Plotter:
 
-    def __init__(self, admittance=False, logf=False, axes=None):
+    def __init__(self, admittance=False, logf=False, axes=None, scale=1):
 
         self.admittance = admittance
         self.logf = logf
@@ -21,6 +21,29 @@ class Plotter:
         self.filename = ''
         self.label = ''
         self.title = ''
+        if scale not in (1, 1000):
+            raise ValueError(f'Unhandled scale {scale}')
+        self.scale = scale
+
+    def ylabel(self, admittance):
+
+        if admittance:
+            ylabel = 'Admittance'
+        else:
+            ylabel = 'Impedance'
+        return ylabel
+
+    def units(self, admittance):
+
+        if admittance:
+            units = 'S'
+        else:
+            units = 'ohms'
+
+        if self.scale == 1000:
+            units = 'm' + units
+
+        return units
 
     def _plot(self, axes):
 
@@ -77,8 +100,8 @@ class Plotter:
 
         return self.error(data, model, percent, admittance=False)
 
-    def error(self, data, model, percent=False,
-              admittance=None, magphase=False):
+    def error(self, data, model, percent=False, admittance=None,
+              magphase=False):
 
         if magphase:
             raise ValueError('TODO: error magphase')
@@ -86,18 +109,15 @@ class Plotter:
         if admittance is None:
             admittance = self.admittance
 
-        if admittance:
-            ylabel = 'Admittance'
-            units = 'S'
-        else:
-            ylabel = 'Impedance'
-            units = 'ohms'
+        ylabel = self.ylabel(admittance)
+        units = self.units(admittance)
 
         mZ = model.Z(data.f)
         dZ = data.Z
         if admittance:
             mZ = 1 / mZ
             dZ = 1 / dZ
+        dZ *= self.scale
 
         axes = self.axes
 
@@ -150,12 +170,8 @@ class Plotter:
         if admittance is None:
             admittance = self.admittance
 
-        if admittance:
-            ylabel = 'Admittance'
-            units = 'S'
-        else:
-            ylabel = 'Impedance'
-            units = 'ohms'
+        ylabel = self.ylabel(admittance)
+        units = self.units(admittance)
 
         if model is not None:
             mZ = model.Z(data.f)
@@ -167,6 +183,7 @@ class Plotter:
         dZ = data.Z
         if admittance:
             dZ = 1 / dZ
+        dZ *= self.scale
 
         axes = self.axes
 
@@ -235,16 +252,13 @@ class Plotter:
         if admittance is None:
             admittance = self.admittance
 
-        if admittance:
-            ylabel = 'Admittance'
-            units = 'S'
-        else:
-            ylabel = 'Impedance'
-            units = 'ohms'
+        ylabel = self.ylabel(admittance)
+        units = self.units(admittance)
 
         dZ = data.Z
         if admittance:
             dZ = 1 / dZ
+        dZ *= self.scale
 
         f = data.f
         if fmin is None:
@@ -290,16 +304,13 @@ class Plotter:
         if admittance is None:
             admittance = self.admittance
 
-        if admittance:
-            ylabel = 'Admittance'
-            units = 'S'
-        else:
-            ylabel = 'Impedance'
-            units = 'ohms'
+        ylabel = self.ylabel(admittance)
+        units = self.units(admittance)
 
         dZ = data.Z
         if admittance:
             dZ = 1 / dZ
+        dZ *= self.scale
 
         f = data.f
         if fmin is None:
@@ -344,12 +355,8 @@ class Plotter:
         if admittance is None:
             admittance = self.admittance
 
-        if admittance:
-            ylabel = 'Admittance'
-            units = 'S'
-        else:
-            ylabel = 'Impedance'
-            units = 'ohms'
+        ylabel = self.ylabel(admittance)
+        units = self.units(admittance)
 
         dZ1 = data1.Z
         dZ2 = data2.Z
@@ -546,12 +553,8 @@ class Plotter:
         if admittance is None:
             admittance = self.admittance
 
-        if admittance:
-            ylabel = 'Admittance'
-            units = 'S'
-        else:
-            ylabel = 'Impedance'
-            units = 'ohms'
+        ylabel = self.ylabel(admittance)
+        units = self.units(admittance)
 
         if admittance:
             for m, x1 in enumerate(x):
