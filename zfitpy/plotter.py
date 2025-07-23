@@ -239,7 +239,7 @@ class Plotter:
     def nyquist(self, data, model=None, title=None,
                 admittance=None, fmin=None, fmax=None):
 
-        # The Cole-Cole plot is similar but was developed format
+        # The Cole-Cole plot is similar but was developed
         # for plotting the complex permittivity of dielectrics.  It plots
         # -epsiloni versus epsilonr for epsilon = epsilonr - j epsiloni,
         #
